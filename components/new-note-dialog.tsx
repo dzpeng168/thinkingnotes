@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import {
@@ -9,6 +9,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock, Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw, FileText, Eye } from "lucide-react"
 import { ExamplePreviewDialog, hasExample } from "@/components/example-preview-dialog"
+import { Spinner, TopProgressBar } from "@/components/ui/loading"
 import { noteApi, categoryApi } from "@/lib/api"
 import { useTemplateMeta } from "@/lib/utils"
 import type { Category, TemplateType } from "@/lib/types"
@@ -106,6 +107,7 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
   const [loading, setLoading] = useState(false)
   const [errMsg, setErrMsg] = useState<string | null>(null)
   const [previewType, setPreviewType] = useState<TemplateType | null>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (open) {
@@ -137,10 +139,12 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
       setTitle("")
       setSelected(null)
       setCategoryId(null)
-      router.push(`/note?id=${note.id}`)
+      router.push(`/note?id=${note.id}&edit=1`)
     } catch (e) {
       console.error("create note failed", e)
       setErrMsg(String(e))
+      // 出错提示在滚动区顶部：滚回顶部确保可见
+      scrollRef.current?.scrollTo({ top: 0 })
     } finally {
       setLoading(false)
     }
@@ -175,41 +179,47 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
         if (!o) reset()
       }}
     >
+      {loading && <TopProgressBar />}
       <DialogContent className="max-w-4xl max-h-[calc(100vh-2rem)] overflow-hidden flex flex-col">
         <DialogHeader className="shrink-0">
           <DialogTitle className="text-xl">{t("template.dialogTitle")}</DialogTitle>
-          <DialogDescription>{t("app.tagline")}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 flex-1 overflow-y-auto pr-1">
-          <div>
-            <div className="text-sm font-medium text-warm-800 mb-2">{t("template.noteTitleLabel")}</div>
-            <Input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder={t("template.noteTitlePlaceholder")}
-              className="h-11 text-base bg-warm-50"
-              autoFocus
-            />
-          </div>
+        <div ref={scrollRef} className="space-y-5 flex-1 overflow-y-auto pr-1">
+          {errMsg && (
+            <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2.5">{errMsg}</div>
+          )}
 
-          <div>
-            <div className="text-sm font-medium text-warm-800 mb-2">{t("template.categoryLabel")}</div>
-            <select
-              value={categoryId ?? ""}
-              onChange={(e) => setCategoryId(e.target.value || null)}
-              className="h-11 w-full rounded-md border border-warm-200 bg-warm-50 px-3 text-base text-warm-900 focus:outline-none focus:ring-2 focus:ring-warm-400"
-            >
-              <option value="">{t("template.categoryUncategorized")}</option>
-              {categories
-                .slice()
-                .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
-                .map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {namePath(c.id)}
-                  </option>
-                ))}
-            </select>
+          {/* 标题 + 分类：同一行 */}
+          <div className="flex gap-3">
+            <div className="flex-1 min-w-0">
+              <div className="text-sm font-medium text-warm-800 mb-2">{t("template.noteTitleLabel")}</div>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder={t("template.noteTitlePlaceholder")}
+                className="h-11 text-base bg-warm-50"
+                autoFocus
+              />
+            </div>
+            <div className="w-56 shrink-0">
+              <div className="text-sm font-medium text-warm-800 mb-2">{t("template.categoryLabel")}</div>
+              <select
+                value={categoryId ?? ""}
+                onChange={(e) => setCategoryId(e.target.value || null)}
+                className="h-11 w-full rounded-md border border-warm-200 bg-warm-50 px-3 text-base text-warm-900 focus:outline-none focus:ring-2 focus:ring-warm-400"
+              >
+                <option value="">{t("template.categoryUncategorized")}</option>
+                {categories
+                  .slice()
+                  .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+                  .map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {namePath(c.id)}
+                    </option>
+                  ))}
+              </select>
+            </div>
           </div>
 
           <div>
@@ -226,16 +236,19 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
               ))}
             </div>
           </div>
-
-          {errMsg && (
-            <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2.5">{errMsg}</div>
-          )}
         </div>
 
         <DialogFooter className="shrink-0">
           <Button variant="ghost" onClick={() => onOpenChange(false)} disabled={loading}>{t("common.cancel")}</Button>
           <Button onClick={create} disabled={loading}>
-            {loading ? t("common.loading") : t("template.createNote")}
+            {loading ? (
+              <>
+                <Spinner size="sm" className="border-white border-t-transparent" />
+                {t("common.loading")}
+              </>
+            ) : (
+              t("template.createNote")
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

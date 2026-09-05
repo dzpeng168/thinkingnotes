@@ -38,6 +38,25 @@ const TEMPLATE_ICONS: Record<string, any> = {
   four_d_work: ListTodo, empathy_map: HeartHandshake, smart_goal: Target, grai: RotateCcw,
 }
 
+// 模板徽章配色：每个模板固定一种柔和色调（与登录页风格一致，避免单调）
+const TEMPLATE_BADGE_STYLES: Record<string, string> = {
+  free: "bg-slate-100 text-slate-600",
+  cornell: "bg-rose-100 text-rose-700",
+  meeting_5w2h: "bg-amber-100 text-amber-700",
+  six_hats: "bg-violet-100 text-violet-700",
+  eisenhower_matrix: "bg-emerald-100 text-emerald-700",
+  monthly_plan: "bg-sky-100 text-sky-700",
+  weekly_plan: "bg-teal-100 text-teal-700",
+  daily_plan: "bg-cyan-100 text-cyan-700",
+  woop: "bg-fuchsia-100 text-fuchsia-700",
+  ride: "bg-orange-100 text-orange-700",
+  prep_method: "bg-lime-100 text-lime-700",
+  four_d_work: "bg-indigo-100 text-indigo-700",
+  empathy_map: "bg-pink-100 text-pink-700",
+  smart_goal: "bg-blue-100 text-blue-700",
+  grai: "bg-stone-200 text-stone-700",
+}
+
 type Selection = string | "all" | "uncategorized" | null
 
 function NoteCard({
@@ -466,7 +485,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className={`min-h-screen bg-warm-50 flex ${isResizing ? "select-none" : ""}`} style={isResizing ? { cursor: "col-resize" } : undefined}>
+    <div className={`min-h-screen bg-gradient-to-b from-warm-100/70 via-warm-50 to-warm-50 flex ${isResizing ? "select-none" : ""}`} style={isResizing ? { cursor: "col-resize" } : undefined}>
       {/* 最左侧竖条 Rail */}
       <AppRail
         onTagsClick={() => setShowTagFilter(true)}
@@ -477,8 +496,14 @@ export default function HomePage() {
       />
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="bg-gradient-to-r from-warm-100 via-warm-50 to-warm-100 border-b border-warm-200">
-          <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-4">
+        <header className="relative overflow-hidden bg-gradient-to-r from-warm-100 via-warm-50 to-warm-100 border-b border-warm-200">
+          {/* 顶栏柔和光斑 */}
+          <div aria-hidden className="pointer-events-none absolute inset-0">
+            <div className="absolute -top-24 left-[8%] w-72 h-48 rounded-full bg-rose-200/30 blur-3xl" />
+            <div className="absolute -top-24 right-[8%] w-72 h-48 rounded-full bg-amber-200/30 blur-3xl" />
+            <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[560px] h-32 rounded-full bg-sky-100/40 blur-3xl" />
+          </div>
+          <div className="relative max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl font-bold text-warm-900 tracking-tight">{t("app.name")}</h1>
               <p className="text-xs text-warm-600">{t("app.tagline")}</p>
@@ -624,7 +649,7 @@ export default function HomePage() {
                 return (
                   <div
                     key={note.id}
-                    className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-md cursor-pointer"
+                    className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-warm-lg cursor-pointer"
                     onClick={() =>
                       isGuest
                         ? setPreviewTtype(note.template_type as TemplateType)
@@ -668,7 +693,7 @@ export default function HomePage() {
                     {/* 顶部：模板名（圆角标签）左 + 分类名 右，各占 50% */}
                     <div className="flex items-center justify-between mb-4 pr-20">
                       <span className="flex-1 text-left">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warm-100 text-warm-600 whitespace-nowrap">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium whitespace-nowrap ${TEMPLATE_BADGE_STYLES[note.template_type] ?? "bg-warm-100 text-warm-600"}`}>
                           {meta.name}
                         </span>
                       </span>

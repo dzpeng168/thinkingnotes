@@ -13,6 +13,7 @@ import { useT } from "@/lib/i18n"
 import type { Note, Tag as TagModel, TemplateType } from "@/lib/types"
 import { useHotkey } from "@/components/hotkeys-context"
 import { SettingsDialog } from "@/components/settings-dialog"
+import { Spinner, LoadingScreen, TopProgressBar } from "@/components/ui/loading"
 import {
   ArrowLeft, Save, Check, Edit3, PencilLine, Plus, Trash2,
   LayoutGrid, ClipboardList, Tag, BookOpen, CalendarDays, Calendar, CalendarClock,
@@ -35,6 +36,8 @@ function NoteEditContent() {
   const router = useRouter()
   const { t, locale } = useT()
   const noteId = searchParams.get("id") || ""
+  // 从"新建笔记"落地时（edit=1）直接进入编辑模式
+  const startInEditor = searchParams.get("edit") === "1"
 
   const [note, setNote] = useState<Note | null>(null)
   const [noteTags, setNoteTags] = useState<TagModel[]>([])
@@ -44,6 +47,7 @@ function NoteEditContent() {
   const [content, setContent] = useState("")
   const [saved, setSaved] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [exporting, setExporting] = useState<"pdf" | "md" | null>(null)
   const [editingTitle, setEditingTitle] = useState(false)
   const [tagDialog, setTagDialog] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState(false)
@@ -217,6 +221,7 @@ function NoteEditContent() {
   // 导出 PDF：html2canvas 截取完整内容 → jsPDF 生成单页自定义尺寸 PDF → 浏览器下载
   const exportPDF = async () => {
     if (!note) return
+    setExporting("pdf")
     try {
       // 动态 import（减少首屏打包体积）
       const { default: html2canvas } = await import("html2canvas")
@@ -292,6 +297,8 @@ function NoteEditContent() {
     } catch (e) {
       console.error(e)
       alert(t("note.exportPDFFailed") + (e as Error).message)
+    } finally {
+      setExporting(null)
     }
   }
 
@@ -301,18 +308,12 @@ function NoteEditContent() {
   const ttype = (note?.template_type || "cornell") as TemplateType
 
   if (!note) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-warm-50">
-        <div className="text-warm-500 flex items-center gap-3">
-          <div className="w-5 h-5 rounded-full border-2 border-warm-500 border-t-transparent animate-spin" />
-          {t("common.loading")}
-        </div>
-      </div>
-    )
+    return <LoadingScreen text={t("common.loading")} />
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-warm-100/40">
+      {exporting && <TopProgressBar />}
       <header className="bg-warm-50 border-b border-warm-200 sticky top-0 z-30 backdrop-blur-sm">
         <div className="px-5 py-3 flex items-center gap-4 flex-wrap">
           <Link href="/">
@@ -346,11 +347,12 @@ function NoteEditContent() {
           </div>
 
           <div className="flex items-center gap-1 ml-auto">
-            <Button variant="ghost" size="sm" className="text-warm-700 hover:text-warm-900 hover:bg-warm-100" onClick={exportMarkdown}>
+            <Button variant="ghost" size="sm" className="text-warm-700 hover:text-warm-900 hover:bg-warm-100" onClick={exportMarkdown} disabled={exporting !== null}>
               <FileText className="w-4 h-4" /> {t("note.exportMarkdown")}
             </Button>
-            <Button variant="ghost" size="sm" className="text-warm-700 hover:text-warm-900 hover:bg-warm-100" onClick={exportPDF}>
-              <Printer className="w-4 h-4" /> {t("note.exportPDF")}
+            <Button variant="ghost" size="sm" className="text-warm-700 hover:text-warm-900 hover:bg-warm-100" onClick={exportPDF} disabled={exporting !== null}>
+              {exporting === "pdf" ? <Spinner size="sm" /> : <Printer className="w-4 h-4" />}
+              {exporting === "pdf" ? t("common.loading") : t("note.exportPDF")}
             </Button>
             <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setDeleteDialog(true)}>
               <Trash2 className="w-4 h-4" /> {t("common.delete")}
@@ -363,7 +365,7 @@ function NoteEditContent() {
             >
               {saving ? (
                 <>
-                  <div className="w-3 h-3 rounded-full border-2 border-warm-500 border-t-transparent animate-spin" />
+                  <Spinner size="sm" />
                   {t("note.saving")}
                 </>
               ) : saved ? (
@@ -432,6 +434,7 @@ function NoteEditContent() {
             value={content}
             onChange={onContentChange}
             noteId={noteId}
+            initialMode={startInEditor ? "editor" : undefined}
           />
         </div>
       </main>

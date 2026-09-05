@@ -10,7 +10,7 @@ import { useT } from "@/lib/i18n"
 import { resolveTemplateMeta } from "@/lib/utils"
 import type { TemplateType } from "@/lib/types"
 import {
-  NotebookPen, AlertCircle, Eye, Languages, Palette, Undo2, CloudUpload, FileText, FolderTree,
+  NotebookPen, AlertCircle, Eye, FileText,
   LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
 } from "lucide-react"
@@ -21,6 +21,16 @@ const ICONS: Record<string, any> = {
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
   FileText,
 }
+
+// 模板图标底色轮换（柔和色调，避免单调）
+const ICON_STYLES = [
+  "bg-rose-100 text-rose-600",
+  "bg-amber-100 text-amber-600",
+  "bg-emerald-100 text-emerald-600",
+  "bg-sky-100 text-sky-600",
+  "bg-violet-100 text-violet-600",
+  "bg-teal-100 text-teal-600",
+]
 
 const TEMPLATE_KEYS: TemplateType[] = [
   "free", "cornell", "meeting_5w2h", "six_hats", "eisenhower_matrix",
@@ -79,17 +89,8 @@ export default function LoginPage() {
     }
   }
 
-  const highlights: { icon: typeof CloudUpload; title: string; desc: string }[] = [
-    { icon: CloudUpload, title: t("landing.cloudSync"), desc: t("landing.cloudSyncDesc") },
-    { icon: FileText, title: t("landing.markdownEditor"), desc: t("landing.markdownEditorDesc") },
-    { icon: FolderTree, title: t("landing.organize"), desc: t("landing.organizeDesc") },
-    { icon: Languages, title: t("landing.multilang"), desc: t("landing.multilangDesc") },
-    { icon: Palette, title: t("landing.themes"), desc: t("landing.themesDesc") },
-    { icon: Undo2, title: t("landing.trash"), desc: t("landing.trashDesc") },
-  ]
-
   return (
-    <div className="min-h-screen bg-warm-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-b from-warm-100/70 via-warm-50 to-warm-50 flex flex-col">
       {/* 顶栏 */}
       <header className="sticky top-0 z-10 border-b border-warm-200/80 bg-warm-50/80 backdrop-blur">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -110,56 +111,30 @@ export default function LoginPage() {
             <Button variant="outline" onClick={enterGuest}>
               <Eye className="w-4 h-4 mr-1.5" /> {t("auth.guestMode")}
             </Button>
-            <Button onClick={() => openAuth("signin")}>{t("auth.signIn")}</Button>
+            <Button variant="ghost" onClick={() => openAuth("signin")}>{t("auth.signIn")}</Button>
+            <Button onClick={() => openAuth("signup")}>{t("landing.startFree")}</Button>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div className="inline-flex items-center gap-1.5 rounded-full border border-warm-200 bg-white px-3 py-1 text-xs text-warm-600 mb-6">
-          <Sparkles className="w-3.5 h-3.5 text-warm-500" />
-          {t("landing.heroBadge")}
+      <section className="relative max-w-6xl mx-auto px-6 pt-20 pb-8 text-center">
+        {/* 柔和背景光斑 */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-20 left-[10%] w-72 h-72 rounded-full bg-rose-200/40 blur-3xl" />
+          <div className="absolute -top-20 right-[10%] w-72 h-72 rounded-full bg-amber-200/40 blur-3xl" />
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[640px] h-48 rounded-full bg-warm-200/50 blur-3xl" />
         </div>
-        <h1 className="text-4xl sm:text-5xl font-bold text-warm-900 leading-tight max-w-3xl mx-auto">
+        <h1 className="relative text-4xl sm:text-5xl font-bold leading-tight max-w-3xl mx-auto bg-gradient-to-r from-warm-900 via-warm-700 to-warm-500 bg-clip-text text-transparent">
           {t("app.tagline")}
         </h1>
         <p className="mt-5 text-base sm:text-lg text-warm-600 max-w-2xl mx-auto leading-relaxed">
           {t("landing.heroSubtitle")}
         </p>
-        <div className="mt-8 flex items-center justify-center gap-3">
-          <Button size="lg" onClick={() => openAuth("signup")}>
-            {t("landing.startFree")}
-          </Button>
-          <Button size="lg" variant="ghost" onClick={() => openAuth("signin")}>
-            {t("auth.signIn")}
-          </Button>
-          <Button size="lg" variant="ghost" onClick={enterGuest}>
-            <Eye className="w-4 h-4 mr-1.5" /> {t("auth.guestMode")}
-          </Button>
-        </div>
-      </section>
-
-      {/* 功能亮点 */}
-      <section className="max-w-6xl mx-auto px-6 py-12 w-full">
-        <h2 className="text-2xl font-bold text-warm-900 text-center mb-2">
-          {t("landing.highlightsTitle")}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
-          {highlights.map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="rounded-xl border border-warm-200 bg-white p-5 shadow-warm">
-              <div className="w-10 h-10 rounded-lg bg-warm-100 text-warm-600 flex items-center justify-center mb-3">
-                <Icon className="w-5 h-5" />
-              </div>
-              <div className="font-semibold text-warm-900 mb-1">{title}</div>
-              <div className="text-sm text-warm-600 leading-relaxed">{desc}</div>
-            </div>
-          ))}
-        </div>
       </section>
 
       {/* 模板矩阵 */}
-      <section className="max-w-6xl mx-auto px-6 py-12 w-full">
+      <section className="max-w-6xl mx-auto px-6 pb-12 w-full">
         <h2 className="text-2xl font-bold text-warm-900 text-center mb-2">
           {t("landing.featuresTitle")}
         </h2>
@@ -167,7 +142,7 @@ export default function LoginPage() {
           {t("landing.featuresSubtitle")}
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-          {TEMPLATE_KEYS.map((key) => {
+          {TEMPLATE_KEYS.map((key, i) => {
             const meta = resolveTemplateMeta(key, locale, (k) => t(k as any))
             const Icon = ICONS[meta.icon]
             return (
@@ -175,7 +150,7 @@ export default function LoginPage() {
                 key={key}
                 className="flex items-start gap-3 rounded-xl border border-warm-200 bg-white p-4 hover:border-warm-400 hover:shadow-warm transition-all"
               >
-                <div className="w-9 h-9 shrink-0 rounded-lg bg-warm-100 text-warm-600 flex items-center justify-center">
+                <div className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${ICON_STYLES[i % ICON_STYLES.length]}`}>
                   {Icon && <Icon className="w-4 h-4" />}
                 </div>
                 <div className="min-w-0">

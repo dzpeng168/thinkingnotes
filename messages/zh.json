@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "ThinkingNotes",
-    "tagline": "帮你把“想问题”这件事变得更高效、更有条理",
+    "tagline": "帮你把想问题变得更有条理",
     "footer": "ThinkingNotes · 笔记保存于云端，随时随地访问",
     "graphViewComingSoon": "图表视图功能即将上线，敬请期待！"
   },
@@ -191,7 +191,6 @@
     "previewOnly": "游客模式下仅可预览示例笔记，登录后即可创建你自己的笔记。"
   },
   "landing": {
-    "heroBadge": "面向思考者的笔记工具",
     "heroSubtitle": "15 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验，从灵感到行动一步到位",
     "startFree": "免费开始",
     "highlightsTitle": "为高效思考而生",

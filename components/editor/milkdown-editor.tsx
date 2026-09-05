@@ -53,12 +53,14 @@ import { nord } from "@milkdown/theme-nord"
 import { useT } from "@/lib/i18n"
 import { uploadImage } from "@/lib/api"
 
+type Mode = "preview" | "editor" | "split" | "source"
+
 interface Props {
   value: string
   onChange: (md: string) => void
+  /** 初始模式，默认 preview；新建笔记落地时传 editor 直接进入编辑 */
+  initialMode?: Mode
 }
-
-type Mode = "preview" | "editor" | "split" | "source"
 
 type IconType = typeof Bold
 
@@ -393,10 +395,10 @@ function SourceEditor({ value, onChange }: SourceEditorProps) {
   )
 }
 
-function MilkdownEditor({ value, onChange }: Props) {
+function MilkdownEditor({ value, onChange, initialMode }: Props) {
   const { t } = useT()
-  const [mode, setMode] = useState<Mode>("preview")
-  const modeRef = useRef<Mode>("preview")
+  const [mode, setMode] = useState<Mode>(initialMode ?? "preview")
+  const modeRef = useRef<Mode>(initialMode ?? "preview")
   const runRef = useRef<(key: Parameters<typeof callCommand>[0], payload?: unknown) => void>()
   const { register, unregister, setScope } = useHotkeys()
 

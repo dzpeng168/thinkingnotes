@@ -5,6 +5,7 @@ import dynamic from "next/dynamic"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from "@/components/ui/dialog"
+import { Spinner } from "@/components/ui/loading"
 import { useT } from "@/lib/i18n"
 import { useLocale, useTemplateMeta } from "@/lib/utils"
 import type { TemplateType } from "@/lib/types"
@@ -12,7 +13,11 @@ import type { TemplateType } from "@/lib/types"
 // Milkdown 依赖浏览器环境，必须 ssr:false
 const MarkdownView = dynamic(
   () => import("@/components/editor/markdown-view").then((m) => m.MarkdownView),
-  { ssr: false, loading: () => <div className="text-sm text-warm-400">...</div> },
+  { ssr: false, loading: () => (
+    <div className="flex items-center justify-center py-16">
+      <Spinner />
+    </div>
+  ) },
 )
 
 /** 模板 → 示例笔记文件名（public/templates/example[/en] 下，free 无示例） */
@@ -81,7 +86,10 @@ export function ExamplePreviewDialog({ ttype, onOpenChange }: Props) {
           {error ? (
             <div className="text-sm text-red-600">{t("template.exampleLoadFailed")}{error}</div>
           ) : content === null ? (
-            <div className="text-sm text-warm-400">{t("common.loading")}</div>
+            <div className="flex flex-col items-center justify-center py-16 gap-3">
+              <Spinner />
+              <span className="text-sm text-warm-400">{t("common.loading")}</span>
+            </div>
           ) : (
             <MarkdownView value={content} />
           )}

@@ -84,10 +84,17 @@ const config: Config = {
           from: { height: 'var(--radix-accordion-content-height)' },
           to: { height: '0' },
         },
+        // 不确定进度条：短条从左侧滑入、伸展、加速滑出（Material 风格）
+        'loading-bar': {
+          '0%': { left: '-40%', width: '40%' },
+          '50%': { left: '30%', width: '50%' },
+          '100%': { left: '100%', width: '40%' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'loading-bar': 'loading-bar 1.4s ease-in-out infinite',
       },
     },
   },

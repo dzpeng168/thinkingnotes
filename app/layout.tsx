@@ -8,7 +8,7 @@ const LOCALE_COOKIE_KEY = "thinkingnotes:locale"
 const META_MESSAGES: Record<"zh" | "en", { title: string; description: string }> = {
   zh: {
     title: 'ThinkingNotes - 思维笔记',
-    description: '帮你把"想问题"这件事变得更高效、更有条理',
+    description: '帮你把想问题变得更有条理',
   },
   en: {
     title: 'ThinkingNotes',
@@ -51,7 +51,7 @@ const themeScript = `
     document.documentElement.setAttribute('lang', langAttr);
     var metaMap = l === 'en'
       ? { title: 'ThinkingNotes', desc: 'Make thinking more efficient and organized' }
-      : { title: 'ThinkingNotes - 思维笔记', desc: '帮你把"想问题"这件事变得更高效、更有条理' };
+      : { title: 'ThinkingNotes - 思维笔记', desc: '帮你把想问题变得更有条理' };
     document.title = metaMap.title;
     var existing = document.querySelector('meta[name="description"]');
     if (!existing) {
