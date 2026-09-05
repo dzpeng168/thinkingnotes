@@ -4,8 +4,9 @@ import { NextResponse, type NextRequest } from 'next/server'
 /**
  * 会话守卫：
  * - 未登录访问业务页 → 重定向 /login
+ * - 游客模式（tn_guest=1 cookie）放行页面路由，仅作前端示例预览
  * - 已登录访问 /login → 重定向 /
- * - 静态资源与 /api 不在此处理（API 各自返回 401 JSON）
+ * - 静态资源与 /api 不在此处理（API 各自返回 401 JSON，游客不可写）
  */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -34,8 +35,9 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser()
 
   const { pathname } = request.nextUrl
+  const isGuest = request.cookies.get('tn_guest')?.value === '1'
 
-  if (!user && pathname !== '/login') {
+  if (!user && !isGuest && pathname !== '/login') {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)

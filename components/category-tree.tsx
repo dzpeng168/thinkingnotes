@@ -34,6 +34,8 @@ interface Props {
   selectedId: string | "all" | "uncategorized" | null
   onSelect: (id: string | "all" | "uncategorized" | null) => void
   onChanged: () => void
+  /** 游客模式：只读浏览，隐藏所有编辑入口 */
+  readOnly?: boolean
 }
 
 interface EditState {
@@ -49,6 +51,7 @@ export function CategoryTree({
   selectedId,
   onSelect,
   onChanged,
+  readOnly = false,
 }: Props) {
   const { t } = useT()
   const [expanded, setExpanded] = useState<Set<string>>(new Set())
@@ -165,7 +168,7 @@ export function CategoryTree({
           <div
             className={`flex gap-0.5 ml-1 ${
               isActive ? "" : "opacity-0 group-hover:opacity-100"
-            }`}
+            } ${readOnly ? "hidden" : ""}`}
           >
             <button
               type="button"
@@ -256,15 +259,17 @@ export function CategoryTree({
         <div className="flex items-center gap-2 text-sm font-semibold text-warm-800">
           <Library className="w-4 h-4" /> {t("sidebar.title")}
         </div>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={startCreateRoot}
-          title={t("sidebar.newRoot")}
-          className="h-7 w-7 p-0"
-        >
-          <Plus className="w-4 h-4" />
-        </Button>
+        {!readOnly && (
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={startCreateRoot}
+            title={t("sidebar.newRoot")}
+            className="h-7 w-7 p-0"
+          >
+            <Plus className="w-4 h-4" />
+          </Button>
+        )}
       </div>
 
       <div className="space-y-0.5">

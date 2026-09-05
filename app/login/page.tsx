@@ -44,6 +44,13 @@ export default function LoginPage() {
     setAuthOpen(true)
   }
 
+  // 游客模式：仅设置前端标记 cookie（middleware 放行页面路由），主页展示本地示例数据
+  const enterGuest = () => {
+    document.cookie = "tn_guest=1; path=/; max-age=" + 60 * 60 * 24 * 30
+    router.push("/")
+    router.refresh()
+  }
+
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     if (busy) return
@@ -54,6 +61,8 @@ export default function LoginPage() {
       if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
+        // 正式登录后清除游客标记
+        document.cookie = "tn_guest=; path=/; max-age=0"
         router.push("/")
         router.refresh()
       } else {
@@ -98,6 +107,9 @@ export default function LoginPage() {
             >
               {locale === "zh" ? "English" : "简体中文"}
             </button>
+            <Button variant="outline" onClick={enterGuest}>
+              <Eye className="w-4 h-4 mr-1.5" /> {t("auth.guestMode")}
+            </Button>
             <Button onClick={() => openAuth("signin")}>{t("auth.signIn")}</Button>
           </div>
         </div>
@@ -121,6 +133,9 @@ export default function LoginPage() {
           </Button>
           <Button size="lg" variant="ghost" onClick={() => openAuth("signin")}>
             {t("auth.signIn")}
+          </Button>
+          <Button size="lg" variant="ghost" onClick={enterGuest}>
+            <Eye className="w-4 h-4 mr-1.5" /> {t("auth.guestMode")}
           </Button>
         </div>
       </section>

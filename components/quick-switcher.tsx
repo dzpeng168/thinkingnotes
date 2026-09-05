@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Search, FileText, LayoutGrid, Calendar as CalendarIcon, Tag as TagIcon } from "lucide-react"
 import { noteApi, categoryApi } from "@/lib/api"
 import { formatDate } from "@/lib/utils"
+import { GUEST_CATEGORIES, GUEST_NOTES } from "@/lib/guest-data"
 import type { NoteListItem, Category } from "@/lib/types"
 import { useT } from "@/lib/i18n"
 
@@ -37,9 +38,15 @@ export function QuickSwitcher({ open, onOpenChange }: Props) {
     setQuery("")
     setSelected(0)
     ;(async () => {
-      const [ns, cs] = await Promise.all([noteApi.list(), categoryApi.list()])
-      setNotes(ns)
-      setCategories(cs)
+      try {
+        const [ns, cs] = await Promise.all([noteApi.list(), categoryApi.list()])
+        setNotes(ns)
+        setCategories(cs)
+      } catch {
+        // 游客模式等未登录场景：回退到本地示例数据
+        setNotes(GUEST_NOTES)
+        setCategories(GUEST_CATEGORIES)
+      }
     })()
     setTimeout(() => inputRef.current?.focus(), 50)
   }, [open])

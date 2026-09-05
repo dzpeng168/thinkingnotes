@@ -13,17 +13,20 @@ import { AppRail } from "@/components/app-rail"
 import { SettingsDialog } from "@/components/settings-dialog"
 import { TagFilterDialog } from "@/components/tag-filter-dialog"
 import { HotkeysDialog } from "@/components/hotkeys-dialog"
+import { ExamplePreviewDialog } from "@/components/example-preview-dialog"
 import { useHotkey } from "@/components/hotkeys-context"
 import {
   Search, Plus, Trash2, Edit3, PencilLine, LayoutGrid, ClipboardList, HardHat,
   BookOpen, Check, Tag as TagIcon, FolderInput, Calendar, CalendarDays, CalendarClock,
-  ChevronLeft, ChevronRight, RotateCcw, Trash, FileText,
+  ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target,
 } from "lucide-react"
 import { noteApi, tagApi, categoryApi, trashApi } from "@/lib/api"
 import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
+import { collectDescendantIds } from "@/lib/category"
+import { GUEST_CATEGORIES, GUEST_NOTES, GUEST_TAGS } from "@/lib/guest-data"
 import { useT } from "@/lib/i18n"
-import type { NoteListItem, Tag as TagModel, Category } from "@/lib/types"
+import type { NoteListItem, Tag as TagModel, Category, TemplateType } from "@/lib/types"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog"
@@ -161,6 +164,23 @@ export default function HomePage() {
   const [currentPage, setCurrentPage] = useState(1)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
+  // 游客模式：null = 尚未检测（挂载后读取 cookie）；true = 只读浏览示例数据
+  const [isGuest, setIsGuest] = useState<boolean | null>(null)
+  const [previewTtype, setPreviewTtype] = useState<TemplateType | null>(null)
+  useEffect(() => {
+    try {
+      setIsGuest(document.cookie.split("; ").includes("tn_guest=1"))
+    } catch {
+      setIsGuest(false)
+    }
+  }, [])
+
+  // 游客退出：清 cookie 回登录页
+  const exitGuest = () => {
+    document.cookie = "tn_guest=; path=/; max-age=0"
+    window.location.href = "/login"
+  }
+
   // 左侧目录宽度（可拖拽调整 + localStorage 持久化）
   const DEFAULT_SIDEBAR_W = 256
   const MIN_SIDEBAR_W = 200
@@ -212,6 +232,11 @@ export default function HomePage() {
   const PAGE_SIZE = 8
 
   const refresh = async () => {
+    // 游客模式：使用本地示例数据，不请求后端
+    if (isGuest) {
+      setNotes(GUEST_NOTES); setTags(GUEST_TAGS); setCategories(GUEST_CATEGORIES)
+      return
+    }
     try {
       const [ns, ts, cs] = await Promise.all([
         noteApi.list(),
@@ -222,12 +247,20 @@ export default function HomePage() {
     } catch (e) { console.error(e) }
   }
 
-  // 挂载时加载列表
+  // 挂载且游客检测完成后加载列表
   useEffect(() => {
+    if (isGuest === null) return
     void refresh()
-  }, [])
+  }, [isGuest])
 
-  const openNew = useCallback(() => setShowNew(true), [])
+  const openNew = useCallback(() => {
+    // 游客模式只读：提示登录后创建
+    if (isGuest) {
+      alert(t("guest.previewOnly"))
+      return
+    }
+    setShowNew(true)
+  }, [isGuest, t])
   const openSettings = useCallback(() => setShowSettings(true), [])
   const focusSearch = useCallback(() => {
     searchInputRef.current?.focus()
@@ -244,7 +277,7 @@ export default function HomePage() {
   useHotkey("app.graph-view", openGraphView)
 
   useEffect(() => {
-    const h1 = () => setShowNew(true)
+    const h1 = () => openNew()
     const h2 = () => setShowSettings(true)
     const h3 = () => setShowTagFilter(true)
     const h4 = () => {
@@ -276,7 +309,7 @@ export default function HomePage() {
       window.removeEventListener("thinknote:set-view", h5)
       window.removeEventListener("thinknote:select-category", h6)
     }
-  }, [])
+  }, [openNew])
 
   // 计算每个分类的笔记数（仅直接归属，不累计子分类，累计由 buildCategoryTree 完成）
   const noteCounts: Record<string, number> = {}
@@ -297,11 +330,17 @@ export default function HomePage() {
     return notes // 下面 useEffect 会重新拉取按分类的笔记
   })()
 
-  // 选中分类时调用 byCategory 拉取（含子分类）
+  // 选中分类时拉取（含子分类）；游客模式用本地示例数据过滤
   const [catNotes, setCatNotes] = useState<NoteListItem[] | null>(null)
   useEffect(() => {
     if (selection === "all" || selection === "uncategorized" || selection === null) {
       setCatNotes(null)
+      return
+    }
+    if (isGuest === null) return
+    if (isGuest) {
+      const ids = new Set(collectDescendantIds(GUEST_CATEGORIES, selection))
+      setCatNotes(GUEST_NOTES.filter((n) => n.category_id && ids.has(n.category_id)))
       return
     }
     let cancelled = false
@@ -309,7 +348,7 @@ export default function HomePage() {
       if (!cancelled) setCatNotes(ns)
     }).catch(console.error)
     return () => { cancelled = true }
-  }, [selection])
+  }, [selection, isGuest])
 
   // 筛选条件变化时回到第一页
   useEffect(() => {
@@ -358,6 +397,8 @@ export default function HomePage() {
   }
 
   const refreshTrash = async () => {
+    // 游客模式无回收站数据（只读示例）
+    if (isGuest) return
     try {
       const list = await trashApi.list()
       setTrashedNotes(list)
@@ -454,12 +495,33 @@ export default function HomePage() {
                 />
               </div>
               <ThemeToggle />
-              <Button onClick={() => setShowNew(true)} size="lg">
-                <Plus className="w-5 h-5" /> {t("note.new")}
-              </Button>
+              {isGuest ? (
+                <>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 whitespace-nowrap">
+                    <Eye className="w-3.5 h-3.5" /> {t("guest.badge")}
+                  </span>
+                  <Button variant="outline" size="lg" onClick={exitGuest}>
+                    <LogIn className="w-4 h-4" /> {t("guest.signIn")}
+                  </Button>
+                </>
+              ) : (
+                <Button onClick={() => setShowNew(true)} size="lg">
+                  <Plus className="w-5 h-5" /> {t("note.new")}
+                </Button>
+              )}
             </div>
           </div>
         </header>
+
+        {/* 游客模式提示条 */}
+        {isGuest && (
+          <div className="border-b border-amber-200 bg-amber-50">
+            <div className="max-w-7xl mx-auto px-6 py-1.5 text-xs text-amber-700 flex items-center justify-center gap-1.5 text-center">
+              <Eye className="w-3.5 h-3.5 shrink-0" />
+              {t("guest.hint")}
+            </div>
+          </div>
+        )}
 
         <main className="flex-1 w-full py-6 flex">
         {/* 左侧目录树（可拖拽调整宽度）— 贴左，仅小 padding */}
@@ -475,6 +537,7 @@ export default function HomePage() {
             selectedId={selection}
             onSelect={setSelection}
             onChanged={refresh}
+            readOnly={!!isGuest}
           />
           {/* 拖拽分隔条 */}
           <div
@@ -543,9 +606,11 @@ export default function HomePage() {
                   ? t("note.noNotesHintFiltered")
                   : t("note.noNotesHintEmpty")}
               </p>
-              <Button size="lg" onClick={() => setShowNew(true)}>
-                <Plus className="w-5 h-5" /> {t("note.createFirst")}
-              </Button>
+              {!isGuest && (
+                <Button size="lg" onClick={() => setShowNew(true)}>
+                  <Plus className="w-5 h-5" /> {t("note.createFirst")}
+                </Button>
+              )}
             </div>
           ) : viewMode === "list" ? (
             <>
@@ -560,9 +625,14 @@ export default function HomePage() {
                   <div
                     key={note.id}
                     className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-md cursor-pointer"
-                    onClick={() => router.push(`/note?id=${note.id}`)}
+                    onClick={() =>
+                      isGuest
+                        ? setPreviewTtype(note.template_type as TemplateType)
+                        : router.push(`/note?id=${note.id}`)
+                    }
                   >
-                    {/* hover 操作按钮 - 绝对定位右上 */}
+                    {/* hover 操作按钮 - 绝对定位右上（游客模式只读，不展示） */}
+                    {!isGuest && (
                     <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <button
                         className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
@@ -593,6 +663,7 @@ export default function HomePage() {
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
                     </div>
+                    )}
 
                     {/* 顶部：模板名（圆角标签）左 + 分类名 右，各占 50% */}
                     <div className="flex items-center justify-between mb-4 pr-20">
@@ -707,6 +778,9 @@ export default function HomePage() {
         </footer>
 
         <NewNoteDialog open={showNew} onOpenChange={setShowNew} />
+
+        {/* 游客模式：点击示例笔记按模板类型预览示例 markdown */}
+        <ExamplePreviewDialog ttype={previewTtype} onOpenChange={(o) => !o && setPreviewTtype(null)} />
 
         <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
 

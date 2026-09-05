@@ -181,7 +181,14 @@
     "passwordHint": "At least 6 characters",
     "signIn": "Sign in",
     "signUp": "Create account",
-    "checkEmail": "Signed up! If email confirmation is enabled, please check your inbox before signing in."
+    "checkEmail": "Signed up! If email confirmation is enabled, please check your inbox before signing in.",
+    "guestMode": "Guest mode"
+  },
+  "guest": {
+    "badge": "Guest mode",
+    "hint": "You are browsing 14 sample thinking-model notes as a guest. Sign in to create and sync your own notes.",
+    "signIn": "Sign in",
+    "previewOnly": "Preview only in guest mode. Sign in to create your own notes."
   },
   "landing": {
     "heroBadge": "A note-taking tool for thinkers",
