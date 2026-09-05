@@ -1,0 +1,926 @@
+"use client"
+
+import { useCallback, useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { TagBadge } from "@/components/ui/tag-badge"
+import { ThemeToggle } from "@/components/theme-toggle"
+import { NewNoteDialog } from "@/components/new-note-dialog"
+import { CategoryTree } from "@/components/category-tree"
+import { CalendarView } from "@/components/calendar-view"
+import { AppRail } from "@/components/app-rail"
+import { SettingsDialog } from "@/components/settings-dialog"
+import { TagFilterDialog } from "@/components/tag-filter-dialog"
+import { HotkeysDialog } from "@/components/hotkeys-dialog"
+import { useHotkey } from "@/components/hotkeys-context"
+import {
+  Search, Plus, Trash2, Edit3, PencilLine, LayoutGrid, ClipboardList, HardHat,
+  BookOpen, Check, Tag as TagIcon, FolderInput, Calendar, CalendarDays, CalendarClock,
+  ChevronLeft, ChevronRight, RotateCcw, Trash, FileText,
+  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target,
+} from "lucide-react"
+import { noteApi, tagApi, categoryApi, trashApi } from "@/lib/api"
+import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
+import { useT } from "@/lib/i18n"
+import type { NoteListItem, Tag as TagModel, Category } from "@/lib/types"
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+} from "@/components/ui/dialog"
+
+const TEMPLATE_ICONS: Record<string, any> = {
+  free: FileText, cornell: LayoutGrid, meeting_5w2h: ClipboardList, six_hats: HardHat,
+  monthly_plan: CalendarDays, weekly_plan: Calendar, daily_plan: CalendarClock,
+  woop: Sparkles, ride: MessageSquare, prep_method: ListOrdered,
+  four_d_work: ListTodo, empathy_map: HeartHandshake, smart_goal: Target, grai: RotateCcw,
+}
+
+type Selection = string | "all" | "uncategorized" | null
+
+function NoteCard({
+  note,
+  categories,
+  onMove,
+  onTags,
+  onRename,
+  onDelete,
+  onClick,
+}: {
+  note: NoteListItem
+  categories: Category[]
+  onMove: (id: string) => void
+  onTags: (id: string) => void
+  onRename: (id: string, title: string) => void
+  onDelete: (id: string) => void
+  onClick: (id: string) => void
+}) {
+  const { t, locale } = useT()
+  const meta = useTemplateMeta(note.template_type)
+  const Icon = TEMPLATE_ICONS[note.template_type] || LayoutGrid
+  const _ = categories
+  void _
+  return (
+    <div
+      className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-md cursor-pointer"
+      onClick={() => onClick(note.id)}
+    >
+      {/* hover 操作按钮 - 绝对定位右上 */}
+      <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <button
+          className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+          title={t("note.tooltipMoveCategory")}
+          onClick={(e) => { e.stopPropagation(); onMove(note.id) }}
+        >
+          <FolderInput className="w-3.5 h-3.5" />
+        </button>
+        <button
+          className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+          title={t("note.tooltipTags")}
+          onClick={(e) => { e.stopPropagation(); onTags(note.id) }}
+        >
+          <TagIcon className="w-3.5 h-3.5" />
+        </button>
+        <button
+          className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+          title={t("note.tooltipRename")}
+          onClick={(e) => { e.stopPropagation(); onRename(note.id, note.title) }}
+        >
+          <PencilLine className="w-3.5 h-3.5" />
+        </button>
+        <button
+          className="w-7 h-7 rounded-md hover:bg-red-50 text-red-500 flex items-center justify-center"
+          title={t("note.tooltipDelete")}
+          onClick={(e) => { e.stopPropagation(); onDelete(note.id) }}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+
+      {/* 顶部：模板名（圆角标签） */}
+      <div className="flex items-center justify-between mb-4 pr-20">
+        <span className="flex-1 text-left">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warm-100 text-warm-600 whitespace-nowrap">
+            {meta.name}
+          </span>
+        </span>
+      </div>
+
+      {/* 标题：固定 2 行高度 */}
+      <h3 className="text-base font-semibold text-warm-900 leading-relaxed line-clamp-2 min-h-[3em] mb-4">
+        {note.title || <span className="text-warm-400 italic font-normal">{t("note.untitledNote")}</span>}
+      </h3>
+
+      {/* 标签：固定高度占位，无标签时显示占位文字 */}
+      <div className="flex flex-wrap gap-1.5 mb-4 min-h-[22px]">
+        {note.tags.length > 0 ? (
+          note.tags.slice(0, 3).map((t) => (
+            <TagBadge key={t.id} color={t.color}>{t.name}</TagBadge>
+          ))
+        ) : (
+          <span className="text-xs text-warm-300">{t("note.noTags")}</span>
+        )}
+        {note.tags.length > 3 && (
+          <span className="text-xs text-warm-400 self-center">+{note.tags.length - 3}</span>
+        )}
+      </div>
+
+      {/* 底部 meta - mt-auto 推到底部 */}
+      <div className="mt-auto pt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-400">
+        <span>{formatDate(note.updated_at, locale)}</span>
+        <span className="flex items-center gap-1 text-warm-500">
+          <Edit3 className="w-3 h-3" /> {t("note.updatedAt")}
+        </span>
+      </div>
+    </div>
+  )
+}
+
+export default function HomePage() {
+  const router = useRouter()
+  const { t, locale } = useT()
+  const [notes, setNotes] = useState<NoteListItem[]>([])
+  const [tags, setTags] = useState<TagModel[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [keyword, setKeyword] = useState("")
+  const [selection, setSelection] = useState<Selection>("all")
+  const [showNew, setShowNew] = useState(false)
+  const [renameId, setRenameId] = useState<string | null>(null)
+  const [renameVal, setRenameVal] = useState("")
+  const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [showTrash, setShowTrash] = useState(false)
+  const [trashedNotes, setTrashedNotes] = useState<NoteListItem[]>([])
+  const [permanentDeleteId, setPermanentDeleteId] = useState<string | null>(null)
+  const [tagDialog, setTagDialog] = useState<string | null>(null)
+  const [moveDialog, setMoveDialog] = useState<string | null>(null)
+  const [newTag, setNewTag] = useState("")
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list")
+  const [showSettings, setShowSettings] = useState(false)
+  const [showHotkeys, setShowHotkeys] = useState(false)
+  const [showTagFilter, setShowTagFilter] = useState(false)
+  const [filterTagIds, setFilterTagIds] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // 左侧目录宽度（可拖拽调整 + localStorage 持久化）
+  const DEFAULT_SIDEBAR_W = 256
+  const MIN_SIDEBAR_W = 200
+  const MAX_SIDEBAR_W = 520
+  const [sidebarWidth, setSidebarWidth] = useState<number>(DEFAULT_SIDEBAR_W)
+  // 挂载后再读取持久化宽度，避免首帧与 SSR 输出不一致导致 hydration 错误
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem("thinkingnotes:sidebar-width")
+      const n = saved ? Number(saved) : NaN
+      if (Number.isFinite(n)) {
+        setSidebarWidth(Math.min(Math.max(n, MIN_SIDEBAR_W), MAX_SIDEBAR_W))
+      }
+    } catch {}
+  }, [])
+  const draggingRef = useRef<{ startX: number; startW: number } | null>(null)
+  const [isResizing, setIsResizing] = useState(false)
+
+  const onResizeStart = (e: React.MouseEvent) => {
+    e.preventDefault()
+    draggingRef.current = { startX: e.clientX, startW: sidebarWidth }
+    setIsResizing(true)
+  }
+  useEffect(() => {
+    if (!isResizing) return
+    const onMove = (e: MouseEvent) => {
+      const d = draggingRef.current
+      if (!d) return
+      const w = Math.min(Math.max(d.startW + (e.clientX - d.startX), MIN_SIDEBAR_W), MAX_SIDEBAR_W)
+      setSidebarWidth(w)
+    }
+    const onUp = () => {
+      draggingRef.current = null
+      setIsResizing(false)
+      setSidebarWidth((w) => {
+        try { window.localStorage.setItem("thinkingnotes:sidebar-width", String(w)) } catch {}
+        return w
+      })
+    }
+    window.addEventListener("mousemove", onMove)
+    window.addEventListener("mouseup", onUp)
+    return () => {
+      window.removeEventListener("mousemove", onMove)
+      window.removeEventListener("mouseup", onUp)
+    }
+  }, [isResizing])
+
+  // 每页展示 4 列 × 2 行 = 8 条
+  const PAGE_SIZE = 8
+
+  const refresh = async () => {
+    try {
+      const [ns, ts, cs] = await Promise.all([
+        noteApi.list(),
+        tagApi.list(),
+        categoryApi.list(),
+      ])
+      setNotes(ns); setTags(ts); setCategories(cs)
+    } catch (e) { console.error(e) }
+  }
+
+  // 挂载时加载列表
+  useEffect(() => {
+    void refresh()
+  }, [])
+
+  const openNew = useCallback(() => setShowNew(true), [])
+  const openSettings = useCallback(() => setShowSettings(true), [])
+  const focusSearch = useCallback(() => {
+    searchInputRef.current?.focus()
+    searchInputRef.current?.select()
+  }, [])
+  const openTagFilter = useCallback(() => setShowTagFilter(true), [])
+  const openGraphView = useCallback(() => {
+    alert(t("app.graphViewComingSoon"))
+  }, [t])
+
+  useHotkey("app.new-note", openNew)
+  useHotkey("app.open-settings", openSettings)
+  useHotkey("app.global-search", focusSearch)
+  useHotkey("app.graph-view", openGraphView)
+
+  useEffect(() => {
+    const h1 = () => setShowNew(true)
+    const h2 = () => setShowSettings(true)
+    const h3 = () => setShowTagFilter(true)
+    const h4 = () => {
+      setTimeout(() => {
+        searchInputRef.current?.focus()
+        searchInputRef.current?.select()
+      }, 60)
+    }
+    const h5 = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      if (detail?.view) setViewMode(detail.view as "list" | "calendar")
+    }
+    const h6 = (e: Event) => {
+      const id = (e as CustomEvent).detail?.id
+      if (id) setSelection(id)
+      else setSelection("all")
+    }
+    window.addEventListener("thinknote:new-note", h1)
+    window.addEventListener("thinknote:open-settings", h2)
+    window.addEventListener("thinknote:open-tag-filter", h3)
+    window.addEventListener("thinknote:focus-search", h4)
+    window.addEventListener("thinknote:set-view", h5)
+    window.addEventListener("thinknote:select-category", h6)
+    return () => {
+      window.removeEventListener("thinknote:new-note", h1)
+      window.removeEventListener("thinknote:open-settings", h2)
+      window.removeEventListener("thinknote:open-tag-filter", h3)
+      window.removeEventListener("thinknote:focus-search", h4)
+      window.removeEventListener("thinknote:set-view", h5)
+      window.removeEventListener("thinknote:select-category", h6)
+    }
+  }, [])
+
+  // 计算每个分类的笔记数（仅直接归属，不累计子分类，累计由 buildCategoryTree 完成）
+  const noteCounts: Record<string, number> = {}
+  let uncategorizedCount = 0
+  for (const n of notes) {
+    if (n.category_id) {
+      noteCounts[n.category_id] = (noteCounts[n.category_id] ?? 0) + 1
+    } else {
+      uncategorizedCount += 1
+    }
+  }
+
+  // 当前选中分类对应的笔记列表
+  const visibleNotes: NoteListItem[] = (() => {
+    if (selection === "all") return notes
+    if (selection === "uncategorized") return notes.filter((n) => !n.category_id)
+    // 选中具体分类：包含所有子分类（这里通过原 notes 全表过滤，靠前端 collectDescendantIds）
+    return notes // 下面 useEffect 会重新拉取按分类的笔记
+  })()
+
+  // 选中分类时调用 byCategory 拉取（含子分类）
+  const [catNotes, setCatNotes] = useState<NoteListItem[] | null>(null)
+  useEffect(() => {
+    if (selection === "all" || selection === "uncategorized" || selection === null) {
+      setCatNotes(null)
+      return
+    }
+    let cancelled = false
+    noteApi.byCategory(selection, true).then((ns) => {
+      if (!cancelled) setCatNotes(ns)
+    }).catch(console.error)
+    return () => { cancelled = true }
+  }, [selection])
+
+  // 筛选条件变化时回到第一页
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [keyword, selection, filterTagIds])
+
+  // 最终展示的笔记列表（再叠加关键词 + 标签过滤）
+  const baseNotes = catNotes ?? visibleNotes
+  const filteredNotes = (() => {
+    const kw = keyword.trim().toLowerCase()
+    const tagSet = new Set(filterTagIds)
+    return baseNotes.filter((n) => {
+      // 标签筛选：必须包含选中标签中的任意一个（OR）
+      if (tagSet.size > 0) {
+        const hit = n.tags.some((t) => tagSet.has(t.id))
+        if (!hit) return false
+      }
+      // 关键词筛选：标题或标签名
+      if (!kw) return true
+      return (
+        n.title.toLowerCase().includes(kw) ||
+        n.tags.some((t) => t.name.toLowerCase().includes(kw))
+      )
+    })
+  })()
+
+  // 分页
+  const totalPages = Math.max(1, Math.ceil(filteredNotes.length / PAGE_SIZE))
+  const safePage = Math.min(currentPage, totalPages)
+  const paginatedNotes = filteredNotes.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  // 状态标题
+  const currentCategoryName = (() => {
+    if (selection === "all") return t("note.allNotes")
+    if (selection === "uncategorized") return t("note.uncategorized")
+    return categories.find((c) => c.id === selection)?.name ?? t("note.fallbackLabel")
+  })()
+
+  const confirmDelete = async () => {
+    if (!deleteId) return
+    try {
+      await noteApi.delete(deleteId)
+      await refresh()
+      await refreshTrash()
+    } finally { setDeleteId(null) }
+  }
+
+  const refreshTrash = async () => {
+    try {
+      const list = await trashApi.list()
+      setTrashedNotes(list)
+    } catch (e) { console.error(e) }
+  }
+
+  const openTrash = async () => {
+    await refreshTrash()
+    setShowTrash(true)
+  }
+
+  const handleRestore = async (id: string) => {
+    try {
+      await trashApi.restore(id)
+      await refresh()
+      await refreshTrash()
+    } catch (e) { console.error(e) }
+  }
+
+  const handlePermanentDelete = async (id: string) => {
+    try {
+      await trashApi.permanentDelete(id)
+      await refreshTrash()
+    } catch (e) { console.error(e) }
+    setPermanentDeleteId(null)
+  }
+
+  const confirmRename = async () => {
+    if (!renameId || !renameVal.trim()) return
+    try { await noteApi.rename(renameId, renameVal.trim()); await refresh() } finally { setRenameId(null) }
+  }
+
+  const addNoteTag = async (noteId: string, tagId: string) => {
+    await tagApi.addToNote(noteId, tagId); await refresh()
+  }
+  const removeNoteTag = async (noteId: string, tagId: string) => {
+    await tagApi.removeFromNote(noteId, tagId); await refresh()
+  }
+  const createTag = async () => {
+    if (!newTag.trim()) return
+    try { await tagApi.create(newTag.trim()); setNewTag(""); await refresh() } catch {}
+  }
+
+  const moveNote = async (noteId: string, targetCategoryId: string | null) => {
+    try {
+      await noteApi.moveToCategory(noteId, targetCategoryId)
+      setMoveDialog(null)
+      await refresh()
+    } catch (e) {
+      console.error(e)
+      alert(t("note.moveCategoryFailed") + (e as any))
+    }
+  }
+
+  // 分类下拉路径
+  const namePath = (id: string): string => {
+    const map = new Map(categories.map((c) => [c.id, c]))
+    const path: string[] = []
+    let cur: Category | undefined = map.get(id)
+    while (cur) {
+      path.unshift(cur.name)
+      cur = cur.parent_id ? map.get(cur.parent_id) : undefined
+    }
+    return path.join(" / ")
+  }
+
+  return (
+    <div className={`min-h-screen bg-warm-50 flex ${isResizing ? "select-none" : ""}`} style={isResizing ? { cursor: "col-resize" } : undefined}>
+      {/* 最左侧竖条 Rail */}
+      <AppRail
+        onTagsClick={() => setShowTagFilter(true)}
+        onSettingsClick={() => setShowSettings(true)}
+        onTrashClick={openTrash}
+        onHotkeysClick={() => setShowHotkeys(true)}
+        trashCount={trashedNotes.length}
+      />
+
+      <div className="flex-1 min-w-0 flex flex-col">
+        <header className="bg-gradient-to-r from-warm-100 via-warm-50 to-warm-100 border-b border-warm-200">
+          <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-warm-900 tracking-tight">{t("app.name")}</h1>
+              <p className="text-xs text-warm-600">{t("app.tagline")}</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="relative w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400" />
+                <Input
+                  ref={searchInputRef}
+                  value={keyword}
+                  onChange={(e) => setKeyword(e.target.value)}
+                  placeholder={t("note.searchPlaceholder")}
+                  className="pl-9 h-10 bg-warm-50"
+                />
+              </div>
+              <ThemeToggle />
+              <Button onClick={() => setShowNew(true)} size="lg">
+                <Plus className="w-5 h-5" /> {t("note.new")}
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <main className="flex-1 w-full py-6 flex">
+        {/* 左侧目录树（可拖拽调整宽度）— 贴左，仅小 padding */}
+        <aside
+          className="shrink-0 relative ml-5"
+          style={{ width: `${sidebarWidth}px` }}
+        >
+          <CategoryTree
+            categories={categories}
+            noteCounts={noteCounts}
+            totalCount={notes.length}
+            uncategorizedCount={uncategorizedCount}
+            selectedId={selection}
+            onSelect={setSelection}
+            onChanged={refresh}
+          />
+          {/* 拖拽分隔条 */}
+          <div
+            onMouseDown={onResizeStart}
+            onDoubleClick={() => {
+              setSidebarWidth(DEFAULT_SIDEBAR_W)
+              try { window.localStorage.setItem("thinkingnotes:sidebar-width", String(DEFAULT_SIDEBAR_W)) } catch {}
+            }}
+            title={t("sidebar.resizerTip")}
+            className={`absolute top-0 right-[-3px] h-full w-[6px] cursor-col-resize z-10 group transition-colors ${
+              isResizing ? "bg-warm-400/60" : "hover:bg-warm-400/40"
+            }`}
+          >
+            <span
+              className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[2px] h-8 rounded-full transition-colors ${
+                isResizing ? "bg-warm-600" : "bg-warm-300 group-hover:bg-warm-500"
+              }`}
+            />
+          </div>
+        </aside>
+
+        {/* 右侧笔记列表 */}
+        <section className="flex-1 min-w-0 px-6 ml-2">
+          <div className="max-w-7xl mx-auto w-full">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-warm-800">
+              {currentCategoryName}
+              <span className="ml-2 text-sm text-warm-500">{t("note.countText", { count: filteredNotes.length })}</span>
+            </h2>
+            <div className="flex items-center rounded-md border border-warm-200 p-0.5 bg-white">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`h-7 px-2.5 rounded flex items-center gap-1.5 text-xs transition-colors ${
+                  viewMode === "list"
+                    ? "bg-warm-100 text-warm-800 font-medium"
+                    : "text-warm-500 hover:text-warm-700"
+                }`}
+                title={t("note.viewListTitle")}
+              >
+                <LayoutGrid className="w-3.5 h-3.5" /> {t("note.viewList")}
+              </button>
+              <button
+                onClick={() => setViewMode("calendar")}
+                className={`h-7 px-2.5 rounded flex items-center gap-1.5 text-xs transition-colors ${
+                  viewMode === "calendar"
+                    ? "bg-warm-100 text-warm-800 font-medium"
+                    : "text-warm-500 hover:text-warm-700"
+                }`}
+                title={t("note.viewCalendarTitle")}
+              >
+                <Calendar className="w-3.5 h-3.5" /> {t("note.viewCalendar")}
+              </button>
+            </div>
+          </div>
+
+          {filteredNotes.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-warm-200 to-warm-300 flex items-center justify-center mb-6 shadow-warm">
+                <BookOpen className="w-12 h-12 text-warm-600" />
+              </div>
+              <h2 className="text-xl font-semibold text-warm-800 mb-2">
+                {keyword || selection !== "all" ? t("note.noNotesHere") : t("note.noNotesYet")}
+              </h2>
+              <p className="text-warm-500 max-w-md mb-6 leading-relaxed">
+                {keyword || selection !== "all"
+                  ? t("note.noNotesHintFiltered")
+                  : t("note.noNotesHintEmpty")}
+              </p>
+              <Button size="lg" onClick={() => setShowNew(true)}>
+                <Plus className="w-5 h-5" /> {t("note.createFirst")}
+              </Button>
+            </div>
+          ) : viewMode === "list" ? (
+            <>
+              <div className="grid grid-cols-4 gap-5 auto-rows-fr">
+                {paginatedNotes.map((note) => {
+                const meta = resolveTemplateMeta(note.template_type, locale, (k) => t(k as any))
+                const Icon = TEMPLATE_ICONS[note.template_type] || LayoutGrid
+                const noteCategory = note.category_id
+                  ? categories.find((c) => c.id === note.category_id)
+                  : null
+                return (
+                  <div
+                    key={note.id}
+                    className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-md cursor-pointer"
+                    onClick={() => router.push(`/note?id=${note.id}`)}
+                  >
+                    {/* hover 操作按钮 - 绝对定位右上 */}
+                    <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                      <button
+                        className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+                        title={t("note.tooltipMoveCategory")}
+                        onClick={(e) => { e.stopPropagation(); setMoveDialog(note.id) }}
+                      >
+                        <FolderInput className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+                        title={t("note.tooltipTags")}
+                        onClick={(e) => { e.stopPropagation(); setTagDialog(note.id) }}
+                      >
+                        <TagIcon className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+                        title={t("note.tooltipRename")}
+                        onClick={(e) => { e.stopPropagation(); setRenameId(note.id); setRenameVal(note.title) }}
+                      >
+                        <PencilLine className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        className="w-7 h-7 rounded-md hover:bg-red-50 text-red-500 flex items-center justify-center"
+                        title={t("note.tooltipDelete")}
+                        onClick={(e) => { e.stopPropagation(); setDeleteId(note.id) }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    {/* 顶部：模板名（圆角标签）左 + 分类名 右，各占 50% */}
+                    <div className="flex items-center justify-between mb-4 pr-20">
+                      <span className="flex-1 text-left">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-warm-100 text-warm-600 whitespace-nowrap">
+                          {meta.name}
+                        </span>
+                      </span>
+                      {/* <span className="flex-1 text-right text-xs text-warm-500  whitespace-nowrap">
+                        {noteCategory?.name ?? ""}
+                      </span> */}
+                    </div>
+
+                    {/* 标题：固定 2 行高度 */}
+                    <h3 className="text-base font-semibold text-warm-900 leading-relaxed line-clamp-2 min-h-[3em] mb-4">
+                      {note.title || <span className="text-warm-400 italic font-normal">{t("note.untitledNote")}</span>}
+                    </h3>
+
+                    {/* 标签：固定高度占位，无标签时显示占位文字 */}
+                    <div className="flex flex-wrap gap-1.5 mb-4 min-h-[22px]">
+                      {note.tags.length > 0 ? (
+                        note.tags.slice(0, 3).map((t) => (
+                          <TagBadge key={t.id} color={t.color}>{t.name}</TagBadge>
+                        ))
+                      ) : (
+                        <span className="text-xs text-warm-300">{t("note.noTags")}</span>
+                      )}
+                      {note.tags.length > 3 && (
+                        <span className="text-xs text-warm-400 self-center">+{note.tags.length - 3}</span>
+                      )}
+                    </div>
+
+                    {/* 底部 meta - mt-auto 推到底部，所有卡片底边对齐 */}
+                    <div className="mt-auto pt-4 border-t border-warm-100 flex items-center justify-between text-xs text-warm-400">
+                      <span>{formatDate(note.updated_at)}</span>
+                      <span className="flex items-center gap-1 text-warm-500">
+                        <Edit3 className="w-3 h-3" /> {t("note.updatedAt")}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })}
+              </div>
+
+              {/* 分页控件（仅列表视图且有数据时显示） */}
+              {filteredNotes.length > 0 && (
+                <div className="flex items-center justify-between mt-6 pt-4 border-t border-warm-100">
+                  <div className="text-xs text-warm-500">
+                    {t("note.pageInfo", { total: filteredNotes.length, current: safePage, totalPages })}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      disabled={safePage <= 1}
+                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                      className="h-8 w-8 rounded-md border border-warm-200 bg-white text-warm-600 hover:bg-warm-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                      title={t("note.prevPage")}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter((p) => {
+                        // 显示当前页附近的页码，省略远端页
+                        if (totalPages <= 7) return true
+                        if (p === 1 || p === totalPages) return true
+                        return Math.abs(p - safePage) <= 1
+                      })
+                      .reduce<(number | "...")[]>((acc, p, idx, arr) => {
+                        if (idx > 0 && (arr[arr.length - 1] as number) < p - 1) {
+                          acc.push("...")
+                        }
+                        acc.push(p)
+                        return acc
+                      }, [])
+                      .map((p, idx) =>
+                        p === "..." ? (
+                          <span key={`dots-${idx}`} className="px-1 text-xs text-warm-400">…</span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => setCurrentPage(p)}
+                            className={`h-8 min-w-[2rem] px-2 rounded-md text-xs font-medium transition-colors ${
+                              p === safePage
+                                ? "bg-warm-600 text-white"
+                                : "border border-warm-200 bg-white text-warm-600 hover:bg-warm-100"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        ),
+                      )}
+                    <button
+                      disabled={safePage >= totalPages}
+                      onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                      className="h-8 w-8 rounded-md border border-warm-200 bg-white text-warm-600 hover:bg-warm-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
+                      title={t("note.nextPage")}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <CalendarView notes={filteredNotes} />
+          )}
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-warm-200 bg-warm-50/80 py-4 text-center text-xs text-warm-500">
+          {t("app.footer")}
+        </footer>
+
+        <NewNoteDialog open={showNew} onOpenChange={setShowNew} />
+
+        <SettingsDialog open={showSettings} onOpenChange={setShowSettings} />
+
+        <HotkeysDialog open={showHotkeys} onOpenChange={setShowHotkeys} />
+
+        <TagFilterDialog
+          open={showTagFilter}
+          onOpenChange={setShowTagFilter}
+          tags={tags}
+          selected={filterTagIds}
+          onToggle={(tagId) =>
+            setFilterTagIds((cur) =>
+              cur.includes(tagId) ? cur.filter((id) => id !== tagId) : [...cur, tagId],
+            )
+          }
+          onClear={() => setFilterTagIds([])}
+        />
+
+      <Dialog open={!!renameId} onOpenChange={(o) => !o && setRenameId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("note.renameTitle")}</DialogTitle>
+          </DialogHeader>
+          <Input value={renameVal} onChange={(e) => setRenameVal(e.target.value)} autoFocus className="h-11" />
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setRenameId(null)}>{t("common.cancel")}</Button>
+            <Button onClick={confirmRename} disabled={!renameVal.trim()}><Check className="w-4 h-4" /> {t("common.confirm")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("note.deleteTitle")}</DialogTitle>
+            <p className="text-sm text-warm-600 mt-2">{t("note.deleteHint")}</p>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setDeleteId(null)}>{t("common.cancel")}</Button>
+            <Button variant="destructive" onClick={confirmDelete}><Trash2 className="w-4 h-4" /> {t("note.moveToTrash")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!tagDialog} onOpenChange={(o) => !o && setTagDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("note.manageTags")}</DialogTitle>
+          </DialogHeader>
+          {tagDialog && (() => {
+            const note = notes.find((n) => n.id === tagDialog)
+            const noteTagIds = new Set(note?.tags.map((t) => t.id) || [])
+            return (
+              <div className="space-y-4">
+                <div className="text-sm text-warm-700">{t("note.tagCurrentNote")}<span className="font-semibold">{note?.title}</span></div>
+                <div className="max-h-72 overflow-auto space-y-2 border border-warm-200 rounded-lg p-3 bg-warm-50">
+                  {tags.map((tag) => {
+                    const on = noteTagIds.has(tag.id)
+                    return (
+                      <button
+                        key={tag.id}
+                        onClick={() => on ? removeNoteTag(tagDialog, tag.id) : addNoteTag(tagDialog, tag.id)}
+                        className={`w-full flex items-center justify-between p-2 rounded-lg text-sm transition-colors ${on ? "bg-warm-500 text-white" : "bg-white hover:bg-warm-100 border border-warm-100"}`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: on ? "white" : tag.color }} />
+                          {tag.name}
+                        </span>
+                        {on ? <Check className="w-4 h-4" /> : <span className="text-warm-400">{t("common.add")}</span>}
+                      </button>
+                    )
+                  })}
+                  {tags.length === 0 && <div className="text-xs text-warm-500 text-center py-6">{t("note.noTagsHint")}</div>}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder={t("note.createTagPlaceholder")}
+                    value={newTag}
+                    onChange={(e) => setNewTag(e.target.value)}
+                    className="h-8 text-sm bg-white"
+                  />
+                  <Button size="sm" variant="secondary" onClick={createTag}><Plus className="w-4 h-4" /></Button>
+                </div>
+              </div>
+            )
+          })()}
+          <DialogFooter>
+            <Button onClick={() => setTagDialog(null)}>{t("common.complete")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!moveDialog} onOpenChange={(o) => !o && setMoveDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("note.moveCategory")}</DialogTitle>
+          </DialogHeader>
+          {moveDialog && (() => {
+            const note = notes.find((n) => n.id === moveDialog)
+            return (
+              <div className="space-y-3">
+                <div className="text-sm text-warm-700">
+                  {t("note.moveCategoryCurrentNote")}<span className="font-semibold">{note?.title}</span>
+                </div>
+                <select
+                  defaultValue={note?.category_id ?? ""}
+                  onChange={(e) => moveNote(moveDialog, e.target.value || null)}
+                  className="h-11 w-full rounded-md border border-warm-200 bg-warm-50 px-3 text-base text-warm-900 focus:outline-none focus:ring-2 focus:ring-warm-400"
+                  autoFocus
+                >
+                  <option value="">{t("note.moveToUncategorized")}</option>
+                  {categories
+                    .slice()
+                    .sort((a, b) => a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+                    .map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {namePath(c.id)}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )
+          })()}
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setMoveDialog(null)}>{t("common.close")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 回收站 */}
+      <Dialog open={showTrash} onOpenChange={setShowTrash} className="max-w-2xl">
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Trash className="w-5 h-5" /> {t("trash.title")}
+              <span className="text-sm font-normal text-warm-500">{t("trash.countText", { count: trashedNotes.length })}</span>
+            </DialogTitle>
+          </DialogHeader>
+
+          {trashedNotes.length === 0 ? (
+            <div className="py-12 text-center text-warm-500">
+              <Trash className="w-12 h-12 mx-auto mb-3 opacity-30" />
+              <p>{t("trash.empty")}</p>
+            </div>
+          ) : (
+            <div className="max-h-[60vh] overflow-y-auto -mx-2 px-2">
+              <ul className="divide-y divide-warm-200">
+                {trashedNotes.map((note) => (
+                  <li
+                    key={note.id}
+                    className="flex items-center justify-between py-3 gap-3"
+                  >
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium text-warm-900">
+                        {note.title || t("note.untitledNote")}
+                      </p>
+                      <p className="text-xs text-warm-500 mt-0.5">
+                        {t("trash.deletedAt")}{formatDate(note.deleted_at ?? note.updated_at, locale)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleRestore(note.id)}
+                        className="text-warm-600 hover:text-warm-900"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1" /> {t("common.restore")}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setPermanentDeleteId(note.id)}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash className="w-4 h-4 mr-1" /> {t("trash.permanentDeleteAction")}
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowTrash(false)}>{t("common.close")}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* 永久删除确认 */}
+      <Dialog
+        open={!!permanentDeleteId}
+        onOpenChange={(o) => !o && setPermanentDeleteId(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("trash.permanentDeleteTitle")}</DialogTitle>
+            <p className="text-sm text-warm-600 mt-2">
+              {t("trash.permanentDeleteHint")}
+            </p>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setPermanentDeleteId(null)}>{t("common.cancel")}</Button>
+            <Button
+              variant="destructive"
+              onClick={() => permanentDeleteId && handlePermanentDelete(permanentDeleteId)}
+            >
+              <Trash className="w-4 h-4" /> {t("trash.permanentDeleteAction")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      </div>
+    </div>
+  )
+}

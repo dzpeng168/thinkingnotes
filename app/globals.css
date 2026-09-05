@@ -1,0 +1,875 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* ============ 主题一：灰白极简（默认） ============ */
+  :root,
+  [data-theme="minimal"] {
+    --background: 0 0% 99%;
+    --foreground: 240 10% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 12%;
+
+    --primary: 240 6% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 94%;
+    --secondary-foreground: 240 10% 20%;
+
+    --muted: 240 5% 96%;
+    --muted-foreground: 240 4% 46%;
+
+    --accent: 240 6% 90%;
+    --accent-foreground: 240 10% 20%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 6% 88%;
+    --input: 240 6% 88%;
+    --ring: 240 6% 40%;
+
+    --radius: 0.5rem;
+
+    --c-warm-50: #fafafa;
+    --c-warm-100: #f4f4f5;
+    --c-warm-200: #e4e4e7;
+    --c-warm-300: #d4d4d8;
+    --c-warm-400: #a1a1aa;
+    --c-warm-500: #71717a;
+    --c-warm-600: #52525b;
+    --c-warm-700: #3f3f46;
+    --c-warm-800: #27272a;
+    --c-warm-900: #18181b;
+    --c-warm-950: #09090b;
+
+    --shadow-warm: 0 4px 20px -4px rgba(0, 0, 0, 0.10);
+    --shadow-warm-lg: 0 10px 40px -10px rgba(0, 0, 0, 0.18);
+  }
+
+  /* ============ 主题二：蓝白商务 ============ */
+  [data-theme="business"] {
+    --background: 210 40% 99%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 222 47% 20%;
+
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 214 95% 93%;
+    --accent-foreground: 222 47% 20%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 217 91% 60%;
+
+    --c-warm-50: #eff6ff;
+    --c-warm-100: #dbeafe;
+    --c-warm-200: #bfdbfe;
+    --c-warm-300: #93c5fd;
+    --c-warm-400: #60a5fa;
+    --c-warm-500: #3b82f6;
+    --c-warm-600: #2563eb;
+    --c-warm-700: #1d4ed8;
+    --c-warm-800: #1e40af;
+    --c-warm-900: #1e3a8a;
+    --c-warm-950: #172554;
+
+    --shadow-warm: 0 4px 20px -4px rgba(37, 99, 235, 0.15);
+    --shadow-warm-lg: 0 10px 40px -10px rgba(37, 99, 235, 0.25);
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(30 30% 75%);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(20 50% 60%);
+}
+
+textarea:focus, input:focus {
+  outline: none;
+}
+
+textarea {
+  resize: none;
+}
+
+/* ============ Milkdown 编辑器暖色主题适配 ============ */
+/* 高度链：data-milkdown-root -> .milkdown -> .editor -> .ProseMirror
+   父级都是 flex column 时，每一层都需要 flex:1 + min-height:0 才能撑满 */
+
+[data-milkdown-root] {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+[data-milkdown-root] .milkdown {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: transparent;
+}
+
+[data-milkdown-root] .milkdown .editor {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: transparent;
+}
+
+/* ProseMirror 基础规则（来自 @milkdown/theme-nord，已剥离 Tailwind v4 @layer 包装） */
+.ProseMirror {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: break-spaces;
+  -webkit-font-variant-ligatures: none;
+  font-variant-ligatures: none;
+  font-feature-settings: "liga" 0;
+  position: relative;
+}
+
+.ProseMirror pre {
+  white-space: pre-wrap;
+}
+
+.ProseMirror li {
+  position: relative;
+}
+
+.ProseMirror-hideselection ::selection {
+  background: none;
+}
+
+.ProseMirror-hideselection {
+  caret-color: transparent;
+}
+
+.ProseMirror [draggable][contenteditable="false"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.ProseMirror-selectednode {
+  outline: 2px solid hsl(200 80% 60%);
+}
+
+li.ProseMirror-selectednode {
+  outline: none;
+}
+
+li.ProseMirror-selectednode:after {
+  content: "";
+  pointer-events: none;
+  border: 2px solid hsl(200 80% 60%);
+  position: absolute;
+  inset: -2px -2px -2px -32px;
+}
+
+img.ProseMirror-separator {
+  border: none !important;
+  margin: 0 !important;
+  display: inline !important;
+}
+
+.ProseMirror .tableWrapper {
+  overflow-x: auto;
+}
+
+.ProseMirror table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ProseMirror td,
+.ProseMirror th {
+  vertical-align: top;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.ProseMirror .column-resize-handle {
+  z-index: 20;
+  pointer-events: none;
+  background-color: hsl(200 80% 70%);
+  width: 4px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -2px;
+}
+
+.ProseMirror.resize-cursor {
+  cursor: col-resize;
+}
+
+.ProseMirror .selectedCell:after {
+  z-index: 2;
+  content: "";
+  pointer-events: none;
+  background: hsl(200 80% 70% / 0.4);
+  position: absolute;
+  inset: 0;
+}
+
+.thinkingnotes-milkdown.ProseMirror {
+  flex: 1 1 0%;
+  min-height: 0;
+  padding: 16px 20px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: hsl(25 30% 20%);
+  background: transparent;
+  overflow-y: auto;
+  outline: none;
+}
+
+.thinkingnotes-milkdown p {
+  margin: 0.6em 0;
+}
+
+.thinkingnotes-milkdown h1,
+.thinkingnotes-milkdown h2,
+.thinkingnotes-milkdown h3,
+.thinkingnotes-milkdown h4 {
+  color: hsl(25 35% 25%);
+  font-weight: 600;
+  margin: 0.9em 0 0.4em;
+  line-height: 1.3;
+}
+
+.thinkingnotes-milkdown h1 { font-size: 1.5em; }
+.thinkingnotes-milkdown h2 { font-size: 1.3em; }
+.thinkingnotes-milkdown h3 { font-size: 1.15em; }
+.thinkingnotes-milkdown h4 { font-size: 1.05em; }
+
+.thinkingnotes-milkdown ul,
+.thinkingnotes-milkdown ol {
+  padding-left: 1.5em;
+  margin: 0.4em 0;
+}
+
+.thinkingnotes-milkdown li {
+  margin: 0.2em 0;
+}
+
+.thinkingnotes-milkdown blockquote {
+  border-left: 3px solid hsl(20 60% 60%);
+  padding-left: 1em;
+  color: hsl(25 15% 40%);
+  margin: 0.6em 0;
+  background: hsl(30 50% 95%);
+}
+
+.thinkingnotes-milkdown code {
+  background: hsl(30 40% 90%);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, "Cascadia Code", monospace;
+  color: hsl(0 70% 45%);
+}
+
+.thinkingnotes-milkdown pre {
+  background: hsl(25 30% 18%);
+  color: hsl(30 50% 96%);
+  padding: 1em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+}
+
+.thinkingnotes-milkdown pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.thinkingnotes-milkdown a {
+  color: hsl(20 70% 45%);
+  text-decoration: underline;
+}
+
+.thinkingnotes-milkdown hr {
+  border: 0;
+  border-top: 1px dashed hsl(30 30% 80%);
+  margin: 1em 0;
+}
+
+.thinkingnotes-milkdown img {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+.thinkingnotes-milkdown:focus {
+  outline: none;
+}
+
+/* ============ 康奈尔笔记布局 ============ */
+
+/* 主题相关颜色：灰白极简 */
+:root,
+[data-theme="minimal"] {
+  --cornell-header-bg: hsl(40 40% 96%);
+  --cornell-header-border: hsl(40 30% 85%);
+  --cornell-cue-bg: hsl(190 35% 92%);
+  --cornell-cue-border: hsl(190 30% 70%);
+  --cornell-note-bg: hsl(350 30% 94%);
+  --cornell-note-border: hsl(350 25% 72%);
+  --cornell-footer-bg: hsl(45 40% 90%);
+  --cornell-footer-border: hsl(45 30% 65%);
+  --cornell-review-bg: hsl(240 5% 96%);
+  --cornell-label: hsl(240 6% 35%);
+}
+
+/* 主题相关颜色：蓝白商务 */
+[data-theme="business"] {
+  --cornell-header-bg: hsl(210 40% 96%);
+  --cornell-header-border: hsl(210 30% 80%);
+  --cornell-cue-bg: hsl(195 40% 90%);
+  --cornell-cue-border: hsl(195 30% 65%);
+  --cornell-note-bg: hsl(210 35% 92%);
+  --cornell-note-border: hsl(210 25% 70%);
+  --cornell-footer-bg: hsl(220 30% 88%);
+  --cornell-footer-border: hsl(220 25% 60%);
+  --cornell-review-bg: hsl(210 40% 97%);
+  --cornell-label: hsl(217 40% 25%);
+}
+
+/* 康奈尔主容器 */
+.thinkingnotes-milkdown .cornell {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 4px;
+}
+
+/* 标题区 */
+.thinkingnotes-milkdown .cornell-header {
+  background: var(--cornell-header-bg);
+  border: 2px solid var(--cornell-header-border);
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.thinkingnotes-milkdown .cornell-header-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cornell-label);
+  margin-bottom: 6px;
+}
+
+.thinkingnotes-milkdown .cornell-title {
+  font-size: 1.6em !important;
+  font-weight: 700 !important;
+  margin: 0 0 4px !important;
+  color: hsl(240 10% 15%) !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.thinkingnotes-milkdown .cornell-subtitle {
+  margin: 0;
+  color: var(--cornell-label);
+  font-size: 0.95em;
+}
+
+/* 中间两栏 */
+.thinkingnotes-milkdown .cornell-body {
+  display: flex;
+  gap: 12px;
+  min-height: 320px;
+}
+
+.thinkingnotes-milkdown .cornell-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.thinkingnotes-milkdown .cornell-cue {
+  flex: 0 0 30%;
+  background: var(--cornell-cue-bg);
+  border-color: var(--cornell-cue-border);
+}
+
+.thinkingnotes-milkdown .cornell-note {
+  flex: 1;
+  background: var(--cornell-note-bg);
+  border-color: var(--cornell-note-border);
+}
+
+.thinkingnotes-milkdown .cornell-col-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cornell-label);
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.thinkingnotes-milkdown .cornell-col-content {
+  flex: 1;
+  padding: 14px 16px;
+  min-height: 240px;
+  overflow-y: auto;
+  line-height: 1.7;
+}
+
+.thinkingnotes-milkdown .cornell-col-content p {
+  margin: 0.3em 0;
+}
+
+/* 总结区 */
+.thinkingnotes-milkdown .cornell-footer {
+  background: var(--cornell-footer-bg);
+  border: 2px solid var(--cornell-footer-border);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.thinkingnotes-milkdown .cornell-footer-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cornell-label);
+  margin-bottom: 6px;
+}
+
+.thinkingnotes-milkdown .cornell-footer-content {
+  min-height: 100px;
+  line-height: 1.7;
+}
+
+.thinkingnotes-milkdown .cornell-footer-content p {
+  margin: 0.3em 0;
+}
+
+/* 复习提示 */
+.thinkingnotes-milkdown .cornell-review {
+  background: var(--cornell-review-bg);
+  border: 1px dashed var(--cornell-header-border);
+  border-radius: 8px;
+  padding: 10px 16px;
+}
+
+.thinkingnotes-milkdown .cornell-review-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cornell-label);
+  margin-bottom: 4px;
+}
+
+.thinkingnotes-milkdown .cornell-review ul {
+  margin: 0;
+  padding-left: 1.4em;
+  font-size: 0.9em;
+  color: var(--cornell-label);
+}
+
+.thinkingnotes-milkdown .cornell-review li {
+  margin: 0.2em 0;
+}
+
+/* 康奈尔容器内的段落去除默认外边距，避免布局错位 */
+.thinkingnotes-milkdown .cornell p {
+  margin: 0.3em 0;
+}
+
+/* 光标进入可编辑区时的视觉反馈 */
+.thinkingnotes-milkdown .cornell-col-content:focus-within,
+.thinkingnotes-milkdown .cornell-footer-content:focus-within {
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
+/* ============ 5W2H 布局 ============ */
+
+.thinkingnotes-milkdown .w2h {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px;
+}
+
+.thinkingnotes-milkdown .w2h-header {
+  background: var(--cornell-header-bg);
+  border: 2px solid var(--cornell-header-border);
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.thinkingnotes-milkdown .w2h-header-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cornell-label);
+  margin-bottom: 6px;
+}
+
+.thinkingnotes-milkdown .w2h-title {
+  font-size: 1.6em !important;
+  font-weight: 700 !important;
+  margin: 0 0 4px !important;
+  color: hsl(240 10% 15%) !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.thinkingnotes-milkdown .w2h-subtitle {
+  margin: 0;
+  color: var(--cornell-label);
+  font-size: 0.95em;
+}
+
+.thinkingnotes-milkdown .w2h-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.thinkingnotes-milkdown .w2h-card {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 160px;
+}
+
+.thinkingnotes-milkdown .w2h-card-label {
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.4);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.thinkingnotes-milkdown .w2h-card-content {
+  flex: 1;
+  padding: 12px 14px;
+  line-height: 1.7;
+}
+
+.thinkingnotes-milkdown .w2h-card-content p {
+  margin: 0.2em 0;
+}
+
+/* 5W2H 各卡片配色 */
+.thinkingnotes-milkdown .w2h-card-who     { background: hsl(190 35% 92%); border-color: hsl(190 30% 70%); }
+.thinkingnotes-milkdown .w2h-card-what    { background: hsl(35 40% 92%); border-color: hsl(35 30% 70%); }
+.thinkingnotes-milkdown .w2h-card-when    { background: hsl(280 25% 93%); border-color: hsl(280 20% 70%); }
+.thinkingnotes-milkdown .w2h-card-where   { background: hsl(160 30% 92%); border-color: hsl(160 25% 70%); }
+.thinkingnotes-milkdown .w2h-card-why     { background: hsl(10 35% 92%); border-color: hsl(10 30% 70%); }
+.thinkingnotes-milkdown .w2h-card-how     { background: hsl(220 35% 93%); border-color: hsl(220 30% 70%); }
+.thinkingnotes-milkdown .w2h-card-howmuch { background: hsl(45 40% 90%); border-color: hsl(45 30% 65%); }
+
+/* 蓝白商务主题下的 5W2H 配色 */
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-who     { background: hsl(195 40% 92%); border-color: hsl(195 30% 65%); }
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-what    { background: hsl(210 35% 93%); border-color: hsl(210 25% 70%); }
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-when    { background: hsl(230 30% 93%); border-color: hsl(230 25% 70%); }
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-where   { background: hsl(180 35% 92%); border-color: hsl(180 30% 65%); }
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-why     { background: hsl(15 35% 93%); border-color: hsl(15 30% 70%); }
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-how     { background: hsl(215 40% 93%); border-color: hsl(215 30% 68%); }
+[data-theme="business"] .thinkingnotes-milkdown .w2h-card-howmuch { background: hsl(250 30% 92%); border-color: hsl(250 25% 68%); }
+
+/* ============ 六顶思考帽布局 ============ */
+
+.thinkingnotes-milkdown .sixhats {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 4px;
+}
+
+.thinkingnotes-milkdown .sixhats-header {
+  background: var(--cornell-header-bg);
+  border: 2px solid var(--cornell-header-border);
+  border-radius: 10px;
+  padding: 16px 20px;
+}
+
+.thinkingnotes-milkdown .sixhats-header-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cornell-label);
+  margin-bottom: 6px;
+}
+
+.thinkingnotes-milkdown .sixhats-title {
+  font-size: 1.6em !important;
+  font-weight: 700 !important;
+  margin: 0 0 4px !important;
+  color: hsl(240 10% 15%) !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.thinkingnotes-milkdown .sixhats-subtitle {
+  margin: 0;
+  color: var(--cornell-label);
+  font-size: 0.95em;
+}
+
+.thinkingnotes-milkdown .sixhats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+
+.thinkingnotes-milkdown .sixhats-card {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid;
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 200px;
+}
+
+.thinkingnotes-milkdown .sixhats-card-icon {
+  font-size: 24px;
+  line-height: 1;
+  padding: 8px 14px 4px;
+}
+
+.thinkingnotes-milkdown .sixhats-card-label {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 4px 14px 10px;
+}
+
+.thinkingnotes-milkdown .sixhats-card-content {
+  flex: 1;
+  padding: 10px 14px 14px;
+  line-height: 1.7;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.thinkingnotes-milkdown .sixhats-card-content p {
+  margin: 0.2em 0;
+}
+
+/* 六顶帽子配色 —— 语义颜色，不随主题切换 */
+.thinkingnotes-milkdown .sixhats-white  { background: hsl(0 0% 95%);  border-color: hsl(0 0% 65%);  }
+.thinkingnotes-milkdown .sixhats-red    { background: hsl(0 60% 92%);  border-color: hsl(0 55% 60%);  }
+.thinkingnotes-milkdown .sixhats-black  { background: hsl(240 5% 90%);  border-color: hsl(240 5% 45%);  }
+.thinkingnotes-milkdown .sixhats-yellow { background: hsl(45 60% 92%); border-color: hsl(45 55% 55%); }
+.thinkingnotes-milkdown .sixhats-green  { background: hsl(140 45% 92%); border-color: hsl(140 40% 50%); }
+.thinkingnotes-milkdown .sixhats-blue   { background: hsl(210 55% 92%); border-color: hsl(210 50% 55%); }
+
+/* ============ 打印 / 导出 PDF 样式 ============ */
+@media print {
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+
+  html, body {
+    background: white !important;
+    color: #1a1a1a !important;
+  }
+
+  /* 隐藏顶部 header 全部按钮区、标签管理、时间信息 */
+  header {
+    display: none !important;
+  }
+
+  /* 隐藏所有按钮、输入框、对话框、Tooltip */
+  button, [role="button"], input, textarea, [role="dialog"], [role="tooltip"],
+  .DialogOverlay, .DialogContent, .SelectContent, [data-radix-popper-content-wrapper] {
+    display: none !important;
+  }
+
+  /* 主容器撑满页面 */
+  main {
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  main > div {
+    max-width: none !important;
+    background: white !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* 编辑器内容区：白底、保留暖色排版、允许分页 */
+  .thinkingnotes-milkdown.ProseMirror {
+    padding: 0 !important;
+    background: white !important;
+    color: #222 !important;
+    overflow: visible !important;
+    font-size: 12pt;
+    line-height: 1.7;
+  }
+
+  .thinkingnotes-milkdown h1,
+  .thinkingnotes-milkdown h2,
+  .thinkingnotes-milkdown h3,
+  .thinkingnotes-milkdown h4 {
+    color: #1a1a1a !important;
+    page-break-after: avoid;
+  }
+
+  .thinkingnotes-milkdown blockquote {
+    background: #f7f7f7 !important;
+    color: #444 !important;
+    border-left-color: #999 !important;
+  }
+
+  .thinkingnotes-milkdown pre {
+    background: #f5f5f5 !important;
+    color: #222 !important;
+    border: 1px solid #ddd;
+    page-break-inside: avoid;
+  }
+
+  .thinkingnotes-milkdown pre code { color: #222 !important; }
+  .thinkingnotes-milkdown code {
+    background: #f0f0f0 !important;
+    color: #c0392b !important;
+  }
+
+  .thinkingnotes-milkdown a { color: #1a1a1a !important; text-decoration: underline; }
+
+  .thinkingnotes-milkdown img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* 康奈尔打印：去背景色 + 保持结构 + 允许分页 */
+  .thinkingnotes-milkdown .cornell-header,
+  .thinkingnotes-milkdown .cornell-cue,
+  .thinkingnotes-milkdown .cornell-note,
+  .thinkingnotes-milkdown .cornell-footer,
+  .thinkingnotes-milkdown .cornell-review {
+    background: white !important;
+    border-color: #ccc !important;
+    color: #1a1a1a !important;
+  }
+  .thinkingnotes-milkdown .cornell-cue { flex: 0 0 30%; }
+  .thinkingnotes-milkdown .cornell-body,
+  .thinkingnotes-milkdown .cornell {
+    page-break-inside: avoid;
+  }
+
+  /* 5W2H / 六顶帽子打印 */
+  .thinkingnotes-milkdown .w2h-card,
+  .thinkingnotes-milkdown .sixhats-card {
+    background: white !important;
+    border-color: #bbb !important;
+    color: #1a1a1a !important;
+    page-break-inside: avoid;
+  }
+  .thinkingnotes-milkdown .w2h-card-label,
+  .thinkingnotes-milkdown .sixhats-card-label,
+  .thinkingnotes-milkdown .cornell-col-label,
+  .thinkingnotes-milkdown .cornell-header-label,
+  .thinkingnotes-milkdown .cornell-footer-label,
+  .thinkingnotes-milkdown .cornell-review-label {
+    background: #f2f2f2 !important;
+    color: #333 !important;
+  }
+
+  /* 禁止 URL 换行 */
+  .thinkingnotes-milkdown p,
+  .thinkingnotes-milkdown li {
+    page-break-inside: avoid;
+  }
+}
+
+/* 用于打印时显示的标题（默认隐藏，打印时显示） */
+.print-only {
+  display: none;
+}
+@media print {
+  .print-only {
+    display: block !important;
+    text-align: center;
+    font-size: 18pt;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #333;
+  }
+}
+
+.thinkingnotes-milkdown .sixhats-card-icon { padding-bottom: 0; }
+.thinkingnotes-milkdown .sixhats-white  .sixhats-card-label { color: hsl(0 0% 25%); }
+.thinkingnotes-milkdown .sixhats-red    .sixhats-card-label { color: hsl(0 70% 35%); }
+.thinkingnotes-milkdown .sixhats-black  .sixhats-card-label { color: hsl(240 5% 15%); }
+.thinkingnotes-milkdown .sixhats-yellow .sixhats-card-label { color: hsl(45 65% 35%); }
+.thinkingnotes-milkdown .sixhats-green  .sixhats-card-label { color: hsl(140 50% 30%); }
+.thinkingnotes-milkdown .sixhats-blue   .sixhats-card-label { color: hsl(210 60% 30%); }
