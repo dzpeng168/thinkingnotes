@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Search, FileText, LayoutGrid, Calendar as CalendarIcon, Tag as TagIcon } from "lucide-react"
 import { noteApi, categoryApi } from "@/lib/api"
 import { formatDate } from "@/lib/utils"
-import { GUEST_CATEGORIES, GUEST_NOTES } from "@/lib/guest-data"
+import { getGuestData } from "@/lib/guest-data"
 import type { NoteListItem, Category } from "@/lib/types"
 import { useT } from "@/lib/i18n"
 
@@ -25,7 +25,7 @@ type SwitcherItem =
 
 export function QuickSwitcher({ open, onOpenChange }: Props) {
   const router = useRouter()
-  const { t } = useT()
+  const { t, locale } = useT()
   const [query, setQuery] = useState("")
   const [selected, setSelected] = useState(0)
   const [notes, setNotes] = useState<NoteListItem[]>([])
@@ -44,8 +44,9 @@ export function QuickSwitcher({ open, onOpenChange }: Props) {
         setCategories(cs)
       } catch {
         // 游客模式等未登录场景：回退到本地示例数据
-        setNotes(GUEST_NOTES)
-        setCategories(GUEST_CATEGORIES)
+        const gd = getGuestData(locale)
+        setNotes(gd.notes)
+        setCategories(gd.categories)
       }
     })()
     setTimeout(() => inputRef.current?.focus(), 50)

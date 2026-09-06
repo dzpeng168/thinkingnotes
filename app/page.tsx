@@ -26,7 +26,7 @@ import {
 import { noteApi, tagApi, categoryApi, trashApi } from "@/lib/api"
 import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
 import { collectDescendantIds } from "@/lib/category"
-import { GUEST_CATEGORIES, GUEST_NOTES, GUEST_TAGS } from "@/lib/guest-data"
+import { getGuestData } from "@/lib/guest-data"
 import { useT } from "@/lib/i18n"
 import type { NoteListItem, Tag as TagModel, Category, TemplateType } from "@/lib/types"
 import {
@@ -263,7 +263,8 @@ export default function HomePage() {
     try {
       // 游客模式：使用本地示例数据，不请求后端
       if (isGuest) {
-        setNotes(GUEST_NOTES); setTags(GUEST_TAGS); setCategories(GUEST_CATEGORIES)
+        const gd = getGuestData(locale)
+        setNotes(gd.notes); setTags(gd.tags); setCategories(gd.categories)
         return
       }
       const [ns, ts, cs] = await Promise.all([
@@ -389,8 +390,9 @@ export default function HomePage() {
     if (isGuest === null) return
     if (pathname !== "/") return
     if (isGuest) {
-      const ids = new Set(collectDescendantIds(GUEST_CATEGORIES, selection))
-      setCatNotes(GUEST_NOTES.filter((n) => n.category_id && ids.has(n.category_id)))
+      const gd = getGuestData(locale)
+      const ids = new Set(collectDescendantIds(gd.categories, selection))
+      setCatNotes(gd.notes.filter((n) => n.category_id && ids.has(n.category_id)))
       return
     }
     // 切到具体分类时短暂显示骨架，给 API 拉取留出过渡窗口，避免闪烁

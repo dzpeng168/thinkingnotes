@@ -209,7 +209,16 @@
     "badge": "Guest mode",
     "hint": "You are browsing 14 sample thinking-model notes as a guest. Sign in to create and sync your own notes.",
     "signIn": "Sign in",
-    "previewOnly": "Preview only in guest mode. Sign in to create your own notes."
+    "previewOnly": "Preview only in guest mode. Sign in to create your own notes.",
+    "tags": {
+      "demo": "Example",
+      "study": "Study",
+      "work": "Work",
+      "plan": "Plan",
+      "retro": "Review",
+      "comm": "Communication",
+      "product": "Product"
+    }
   },
   "landing": {
     "heroSubtitle": "15 thinking-model templates · Cloud sync · Native Markdown — from idea to action in one step",
