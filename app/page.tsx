@@ -550,7 +550,6 @@ export default function HomePage() {
           <div className="relative max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-4">
             <div>
               <h1 className="text-2xl font-bold text-warm-900 tracking-tight">{t("app.name")}</h1>
-              <p className="text-xs text-warm-600">{t("app.tagline")}</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="relative w-80">

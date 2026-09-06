@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useT } from "@/lib/i18n"
 
 /** 站点通用 Footer：PRODUCT / CONTACT / 法律链接。链接均为占位 #，后续接入营销站 URL 时替换 */
@@ -16,9 +17,16 @@ export function SiteFooter() {
               {t("siteFooter.product")}
             </h4>
             <ul className="space-y-2">
-              <FooterLink href="#">{t("siteFooter.home")}</FooterLink>
+              {/* <FooterLink href="/">{t("siteFooter.home")}</FooterLink> */}
               {/* <FooterLink href="#">{t("siteFooter.pricing")}</FooterLink> */}
-              <FooterLink href="#">{t("siteFooter.features")}</FooterLink>
+              <li>
+                <Link
+                  href="/docs/features"
+                  className="text-sm text-warm-600 hover:text-warm-900 transition-colors"
+                >
+                  {t("siteFooter.features")}
+                </Link>
+              </li>
               {/* <FooterLink href="#">{t("siteFooter.blog")}</FooterLink> */}
               {/* <FooterLink href="#">{t("siteFooter.newsletter")}</FooterLink> */}
             </ul>
@@ -30,8 +38,15 @@ export function SiteFooter() {
               {t("siteFooter.contact")}
             </h4>
             <ul className="space-y-2">
-              <FooterLink href="#">{t("siteFooter.support")}</FooterLink>
-              <FooterLink href="#">{t("siteFooter.email")}</FooterLink>
+              
+              <li>
+                <a
+                  href="mailto:dzpeng168@gmail.com"
+                  className="text-sm text-warm-600 hover:text-warm-900 transition-colors"
+                >
+                  Email
+                </a>
+              </li>
             </ul>
           </div>
 

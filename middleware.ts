@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
   const isGuest = request.cookies.get('tn_guest')?.value === '1'
 
-  if (!user && !isGuest && pathname !== '/login' && pathname !== '/reset-password') {
+  if (!user && !isGuest && pathname !== '/login' && pathname !== '/reset-password' && !pathname.startsWith('/docs/')) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)

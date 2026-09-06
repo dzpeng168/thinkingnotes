@@ -22,6 +22,16 @@ const ICONS: Record<string, any> = {
   FileText,
 }
 
+// 模板图标底色轮换（柔和色调，对齐登录页模板矩阵）
+const ICON_STYLES = [
+  "bg-rose-100 text-rose-600",
+  "bg-amber-100 text-amber-600",
+  "bg-emerald-100 text-emerald-600",
+  "bg-sky-100 text-sky-600",
+  "bg-violet-100 text-violet-600",
+  "bg-teal-100 text-teal-600",
+]
+
 const TEMPLATE_KEYS: TemplateType[] = [
   "free",
   "cornell",
@@ -46,17 +56,20 @@ interface Props {
 }
 
 function TemplateCard({
-  ttype, selected, onSelect, onPreview,
-}: { ttype: TemplateType; selected: boolean; onSelect: () => void; onPreview: () => void }) {
+  ttype, selected, onSelect, onPreview, index,
+}: { ttype: TemplateType; selected: boolean; onSelect: () => void; onPreview: () => void; index: number }) {
   const { t } = useT()
   const meta = useTemplateMeta(ttype)
   const Icon = ICONS[meta.icon]
   const previewable = hasExample(ttype)
+  const iconCls = selected
+    ? "bg-warm-600 text-white"
+    : ICON_STYLES[index % ICON_STYLES.length]
   return (
     <div
       className={`relative rounded-xl border-2 transition-all ${selected
         ? "border-warm-600 bg-warm-100 shadow-warm-lg"
-        : "border-warm-200 bg-warm-50 hover:border-warm-400 hover:shadow-warm"
+        : "border-warm-200 bg-white hover:border-warm-400 hover:shadow-warm"
       }`}
     >
       <button
@@ -64,7 +77,7 @@ function TemplateCard({
         className="w-full h-full p-3.5 text-left min-h-[108px]"
       >
         <div className="flex items-center gap-3 mb-2">
-          <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${selected ? "bg-warm-600 text-white" : "bg-warm-200 text-warm-700"}`}>
+          <div className={`w-9 h-9 rounded-lg flex items-center justify-center transition-colors ${iconCls}`}>
             {Icon && <Icon className="w-4 h-4" />}
           </div>
           <div className="font-semibold text-sm text-warm-800">{meta.name}</div>
@@ -224,16 +237,22 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
 
           <div>
             <div className="text-sm font-medium text-warm-800 mb-3">{t("template.chooseTemplateLabel")}</div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {TEMPLATE_KEYS.map((key) => (
-                <TemplateCard
-                  key={key}
-                  ttype={key}
-                  selected={selected === key}
-                  onSelect={() => { setSelected(key); setErrMsg(null) }}
-                  onPreview={() => setPreviewType(key)}
-                />
-              ))}
+            <div className="relative rounded-2xl border border-warm-200/70 bg-gradient-to-br from-rose-50/70 via-amber-50/50 to-sky-50/70 p-3 overflow-hidden">
+              <div aria-hidden className="pointer-events-none absolute -top-10 -left-10 w-40 h-40 rounded-full bg-rose-200/40 blur-2xl" />
+              <div aria-hidden className="pointer-events-none absolute -bottom-10 -right-10 w-40 h-40 rounded-full bg-sky-200/40 blur-2xl" />
+              <div aria-hidden className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-24 rounded-full bg-amber-200/30 blur-3xl" />
+              <div className="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                {TEMPLATE_KEYS.map((key, i) => (
+                  <TemplateCard
+                    key={key}
+                    index={i}
+                    ttype={key}
+                    selected={selected === key}
+                    onSelect={() => { setSelected(key); setErrMsg(null) }}
+                    onPreview={() => setPreviewType(key)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>

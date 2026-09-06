@@ -7,7 +7,7 @@
 
 ---
 
-## 🎩 Blue Hat — Management & Control
+## Blue Hat — Management & Control
 
 > Organize the thinking process, define the problem, set the agenda, and summarize conclusions.
 
@@ -20,7 +20,7 @@
 
 ---
 
-## 🤍 White Hat — Facts & Information
+## White Hat — Facts & Information
 
 > Focus only on objective facts, data, and information, without any subjective judgment.
 
@@ -37,7 +37,7 @@
 
 ---
 
-## ❤️ Red Hat — Emotions & Intuition
+## Red Hat — Emotions & Intuition
 
 > Express emotions, intuition, and gut feelings directly, without justification or explanation.
 
@@ -59,7 +59,7 @@
 
 ---
 
-## 🖤 Black Hat — Caution & Risk
+## Black Hat — Caution & Risk
 
 > Think critically, identify risks, flaws, and potential issues.
 
@@ -79,7 +79,7 @@
 
 ---
 
-## 💛 Yellow Hat — Optimism & Value
+## Yellow Hat — Optimism & Value
 
 > Think optimistically, focus on benefits, value, and feasibility.
 
@@ -102,7 +102,7 @@
 
 ---
 
-## 💚 Green Hat — Creativity & New Ideas
+## Green Hat — Creativity & New Ideas
 
 > Think divergently, propose new plans, new possibilities, and alternative paths.
 
@@ -122,7 +122,7 @@
 
 ---
 
-## 🎩 Blue Hat (Summary) — Conclusions & Actions
+## Blue Hat (Summary) — Conclusions & Actions
 
 > Synthesize the thinking results from all hats to form final conclusions and an action plan.
 
@@ -153,9 +153,9 @@
 
 | Hat | Color | Core Function | Typical Questions |
 |---|---|---|---|
-| 🤍 White Hat | White | Facts & Information | What do we know? What is missing? |
-| ❤️ Red Hat | Red | Emotions & Intuition | What does intuition say? How do we feel? |
-| 🖤 Black Hat | Black | Caution & Risk | Where are the risks? What could go wrong? |
-| 💛 Yellow Hat | Yellow | Optimism & Value | What are the benefits? Why is it feasible? |
-| 💚 Green Hat | Green | Creativity & New Ideas | What other possibilities are there? Is there a better way? |
-| 🎩 Blue Hat | Blue | Management & Control | What are we thinking about? What's the next step? |
+| White Hat | White | Facts & Information | What do we know? What is missing? |
+| Red Hat | Red | Emotions & Intuition | What does intuition say? How do we feel? |
+| Black Hat | Black | Caution & Risk | Where are the risks? What could go wrong? |
+| Yellow Hat | Yellow | Optimism & Value | What are the benefits? Why is it feasible? |
+| Green Hat | Green | Creativity & New Ideas | What other possibilities are there? Is there a better way? |
+| Blue Hat | Blue | Management & Control | What are we thinking about? What's the next step? |

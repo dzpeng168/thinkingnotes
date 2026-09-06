@@ -1,26 +1,55 @@
 # Eisenhower Matrix
 
-```
-┌────────────────────────────────────────────────────┬────────────────────────────────────────────────────┐
-│  🔥 Important + Urgent                             │  📅 Important + Not Urgent                         │
-│  Quadrant I · Do it now                            │  Quadrant II · Plan it                             │
-├────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│  - [ ]                                             │  - [ ]                                             │
-│  - [ ]                                             │  - [ ]                                             │
-│  - [ ]                                             │  - [ ]                                             │
-│  - [ ]                                             │  - [ ]                                             │
-│  - [ ]                                             │  - [ ]                                             │
-│                                                    │  - [ ]                                             │
-│  💡 Crises / Deadlines / Pressing issues           │  💡 Growth / Planning / Prevention                 │
-├────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│  👥 Not Important + Urgent                         │  🚫 Not Important + Not Urgent                     │
-│  Quadrant III · Delegate it                        │  Quadrant IV · Eliminate it                        │
-├────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│  - [ ] → Delegate to:                              │  - [ ]                                             │
-│  - [ ] → Delegate to:                              │  - [ ]                                             │
-│  - [ ] → Delegate to:                              │  - [ ]                                             │
-│  - [ ] → Delegate to:                              │  - [ ]                                             │
-│                                                    │                                                    │
-│  💡 Interruptions / Meetings / Repetitive tasks    │  💡 Trivia / Scrolling / Procrastination           │
-└────────────────────────────────────────────────────┴────────────────────────────────────────────────────┘
-```
+## Quadrant I · Important + Urgent
+
+**Action: Do it now**
+
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+
+**Typical signs:** Crises / Deadlines / Pressing issues
+
+---
+
+## Quadrant II · Important + Not Urgent
+
+**Action: Plan it**
+
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+
+**Typical signs:** Growth / Planning / Prevention
+
+---
+
+## Quadrant III · Not Important + Urgent
+
+**Action: Delegate it**
+
+- [ ] Delegate to:
+- [ ] Delegate to:
+- [ ] Delegate to:
+- [ ] Delegate to:
+
+**Typical signs:** Interruptions / Meetings / Repetitive tasks
+
+---
+
+## Quadrant IV · Not Important + Not Urgent
+
+**Action: Eliminate it**
+
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+- [ ]
+
+**Typical signs:** Trivia / Scrolling / Procrastination

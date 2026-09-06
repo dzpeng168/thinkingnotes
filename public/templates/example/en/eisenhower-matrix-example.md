@@ -1,31 +1,66 @@
 # Eisenhower Matrix
 
-```
-┌────────────────────────────────────────────────────┬────────────────────────────────────────────────────┐
-│  🔥 Important + Urgent                             │  📅 Important + Not Urgent                         │
-│  Quadrant I · Do It Now                            │  Quadrant II · Plan It                             │
-├────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│  - [x] Fix online payment Bug (users can't pay)    │  - [x] Draft Q4 product roadmap                    │
-│  - [x] Urgent client requirement change (launch tomorrow) │  - [ ] Map out user growth system            │
-│  - [ ] Tomorrow's project review PPT not finished  │  - [ ] Prepare team tech share                     │
-│  - [ ] Server alert, CPU at 90%                    │  - [ ] Read a product design book                  │
-│  - [ ] Boss needs quarterly data this afternoon, not compiled yet │  - [ ] Fitness plan (3x per week)          │
-│                                                    │  - [ ] 1-on-1 check-ins with team members          │
-│  💡 Crisis / Urgency / Deadlines                   │  💡 Growth / Planning / Prevention                 │
-│  Current: 5 items, too many! Need to reduce        │  Current: 6 items, the most important quadrant, invest more time here │
-├────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│  👥 Not Important + Urgent                         │  🚫 Not Important + Not Urgent                     │
-│  Quadrant III · Delegate It                        │  Quadrant IV · Delete It                           │
-├────────────────────────────────────────────────────┼────────────────────────────────────────────────────┤
-│  - [x] → Delegate: Intern compiles competitor feature table │  - [x] Scrolled social media for 30 min      │
-│  - [x] → Delegate: Admin books team dinner restaurant │  - [x] Replied to "Got it" flood messages in group chat │
-│  - [ ] → Delegate: Data analyst produces last week's data report │  - [ ] Read an unrelated industry gossip article │
-│  - [ ] → Delegate: HR arranges new employee onboarding │  - [ ] Researched a new tool temporarily not needed │
-│                                                    │  - [ ] Organized desktop icons (didn't actually need to) │
-│  💡 Interruptions / Meetings / Repetitive tasks    │  💡 Trivia / Phone scrolling / Avoidance behavior  │
-│  Current: 4 items, delegate as much as possible, don't occupy your time │  Current: 5 items, cut decisively, don't let these things steal your time │
-└────────────────────────────────────────────────────┴────────────────────────────────────────────────────┘
-```
+## Quadrant I · Important + Urgent
+
+**Action: Do it now**
+
+- [x] Fix online payment bug (users cannot pay)
+- [x] Urgent client requirement change (launch tomorrow)
+- [ ] Tomorrow's project review deck is not finished
+- [ ] Server alert: CPU usage is at 90%
+- [ ] Boss needs quarterly data this afternoon, but it is not ready yet
+
+**Typical signs:** Crisis / Urgency / Deadlines
+
+**Current state:** 5 items, too many. We need to reduce this.
+
+---
+
+## Quadrant II · Important + Not Urgent
+
+**Action: Plan it**
+
+- [x] Draft the Q4 product roadmap
+- [ ] Map out the user growth system
+- [ ] Prepare the team tech-sharing session
+- [ ] Read a book on product design
+- [ ] Build a fitness plan (3 times per week)
+- [ ] Hold 1-on-1 check-ins with team members
+
+**Typical signs:** Growth / Planning / Prevention
+
+**Current state:** 6 items. This is the most important quadrant and deserves more time.
+
+---
+
+## Quadrant III · Not Important + Urgent
+
+**Action: Delegate it**
+
+- [x] Delegate to: intern to compile the competitor feature list
+- [x] Delegate to: admin to book a restaurant for the team dinner
+- [ ] Delegate to: data analyst to prepare last week's weekly report
+- [ ] Delegate to: HR to arrange new employee onboarding
+
+**Typical signs:** Interruptions / Meetings / Repetitive tasks
+
+**Current state:** 4 items. Delegate as much as possible so they do not take up your time.
+
+---
+
+## Quadrant IV · Not Important + Not Urgent
+
+**Action: Eliminate it**
+
+- [x] Scrolled social media for 30 minutes
+- [x] Replied to a flood of "got it" messages in the group chat
+- [ ] Read an unrelated industry gossip article
+- [ ] Researched a tool that is not needed right now
+- [ ] Organized desktop icons even though it was unnecessary
+
+**Typical signs:** Trivia / Phone scrolling / Avoidance behavior
+
+**Current state:** 5 items. Cut these decisively before they steal your time.
 
 ---
 
