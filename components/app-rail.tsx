@@ -15,7 +15,7 @@ interface Props {
 export function AppRail({ onTagsClick, onSettingsClick, onTrashClick, onHotkeysClick, trashCount }: Props) {
   const { t } = useT()
   return (
-    <nav className="w-14 shrink-0 bg-gradient-to-b from-warm-100 to-warm-50 border-r border-warm-200 flex flex-col items-center justify-between py-4">
+    <nav className="w-14 shrink-0 bg-gradient-to-b from-warm-100 to-warm-50 border-r border-warm-200 flex flex-col items-center justify-start gap-3 py-4">
       {/* 顶部 Logo */}
       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm-500 to-warm-700 text-white flex items-center justify-center shadow-warm">
         <BookOpen className="w-5 h-5" />

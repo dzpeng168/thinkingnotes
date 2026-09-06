@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { SiteFooter } from "@/components/site-footer"
 import { createClient } from "@/lib/supabase/client"
 import { useT } from "@/lib/i18n"
 import { resolveTemplateMeta } from "@/lib/utils"
@@ -42,15 +43,17 @@ export default function LoginPage() {
   const { t, locale, setLocale } = useT()
   const router = useRouter()
   const [authOpen, setAuthOpen] = useState(false)
-  const [mode, setMode] = useState<"signin" | "signup">("signin")
+  const [mode, setMode] = useState<"signin" | "signup" | "forgot">("signin")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
+  const [forgotSent, setForgotSent] = useState(false)
 
   const openAuth = (m: "signin" | "signup") => {
     setMode(m)
     setError(null)
+    setForgotSent(false)
     setAuthOpen(true)
   }
 
@@ -65,10 +68,17 @@ export default function LoginPage() {
     e.preventDefault()
     if (busy) return
     setError(null)
+    setForgotSent(false)
     setBusy(true)
     try {
       const supabase = createClient()
-      if (mode === "signin") {
+      if (mode === "forgot") {
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
+        })
+        if (error) throw error
+        setForgotSent(true)
+      } else if (mode === "signin") {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
         // 正式登录后清除游客标记
@@ -76,11 +86,18 @@ export default function LoginPage() {
         router.push("/")
         router.refresh()
       } else {
-        const { error } = await supabase.auth.signUp({ email, password })
+        const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
-        // 未开启邮箱确认时直接登录成功；开启则提示查收邮件
-        setError(t("auth.checkEmail"))
-        setMode("signin")
+        if (data.session) {
+          // 未开启邮箱确认：注册即登录，直接进入首页
+          document.cookie = "tn_guest=; path=/; max-age=0"
+          router.push("/")
+          router.refresh()
+        } else {
+          // 开启了邮箱确认：提示查收邮件
+          setError(t("auth.checkEmail"))
+          setMode("signin")
+        }
       }
     } catch (err) {
       setError((err as Error).message)
@@ -164,53 +181,52 @@ export default function LoginPage() {
       </section>
 
       {/* 底部 CTA + Footer */}
-      <footer className="mt-auto border-t border-warm-200/80 bg-white">
-        <div className="max-w-6xl mx-auto px-6 py-10 text-center">
-          <h3 className="text-xl font-bold text-warm-900 mb-2">{t("app.name")}</h3>
-          <p className="text-sm text-warm-600 mb-5">{t("landing.heroSubtitle")}</p>
-          <Button size="lg" onClick={() => openAuth("signup")}>
-            <Eye className="w-4 h-4 mr-1.5" />
-            {t("landing.startFree")}
-          </Button>
-          <p className="mt-8 text-xs text-warm-400">{t("landing.footer")}</p>
-        </div>
-      </footer>
+
+      <SiteFooter />
 
       {/* 登录/注册弹窗 */}
       <Dialog open={authOpen} onOpenChange={setAuthOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-center">
-              {mode === "signin" ? t("auth.signIn") : t("auth.signUp")}
+              {mode === "forgot"
+                ? t("auth.forgotTitle")
+                : mode === "signin"
+                  ? t("auth.signIn")
+                  : t("auth.signUp")}
             </DialogTitle>
-            <DialogDescription className="text-center">{t("app.tagline")}</DialogDescription>
+            <DialogDescription className="text-center">
+              {mode === "forgot" ? t("auth.forgotDesc") : t("app.tagline")}
+            </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={submit} className="space-y-4">
-            <div className="flex rounded-lg border border-warm-200 p-0.5 bg-warm-50">
-              <button
-                type="button"
-                onClick={() => { setMode("signin"); setError(null) }}
-                className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                  mode === "signin"
-                    ? "bg-white text-warm-900 shadow-sm border border-warm-200"
-                    : "text-warm-500 hover:text-warm-700"
-                }`}
-              >
-                {t("auth.signInTab")}
-              </button>
-              <button
-                type="button"
-                onClick={() => { setMode("signup"); setError(null) }}
-                className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
-                  mode === "signup"
-                    ? "bg-white text-warm-900 shadow-sm border border-warm-200"
-                    : "text-warm-500 hover:text-warm-700"
-                }`}
-              >
-                {t("auth.signUpTab")}
-              </button>
-            </div>
+            {mode !== "forgot" && (
+              <div className="flex rounded-lg border border-warm-200 p-0.5 bg-warm-50">
+                <button
+                  type="button"
+                  onClick={() => { setMode("signin"); setError(null); setForgotSent(false) }}
+                  className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
+                    mode === "signin"
+                      ? "bg-white text-warm-900 shadow-sm border border-warm-200"
+                      : "text-warm-500 hover:text-warm-700"
+                  }`}
+                >
+                  {t("auth.signInTab")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setMode("signup"); setError(null); setForgotSent(false) }}
+                  className={`flex-1 h-9 rounded-md text-sm font-medium transition-colors ${
+                    mode === "signup"
+                      ? "bg-white text-warm-900 shadow-sm border border-warm-200"
+                      : "text-warm-500 hover:text-warm-700"
+                  }`}
+                >
+                  {t("auth.signUpTab")}
+                </button>
+              </div>
+            )}
 
             <div className="space-y-1">
               <label className="text-xs font-medium text-warm-700">{t("auth.email")}</label>
@@ -226,22 +242,39 @@ export default function LoginPage() {
               />
             </div>
 
-            <div className="space-y-1">
-              <label className="text-xs font-medium text-warm-700">{t("auth.password")}</label>
-              <Input
-                type="password"
-                required
-                minLength={6}
-                autoComplete={mode === "signin" ? "current-password" : "new-password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="h-11 bg-warm-50"
-              />
-              {mode === "signup" && (
-                <p className="text-[11px] text-warm-400">{t("auth.passwordHint")}</p>
-              )}
-            </div>
+            {mode !== "forgot" && (
+              <div className="space-y-1">
+                <label className="text-xs font-medium text-warm-700">{t("auth.password")}</label>
+                <Input
+                  type="password"
+                  required
+                  minLength={6}
+                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="h-11 bg-warm-50"
+                />
+                {mode === "signup" && (
+                  <p className="text-[11px] text-warm-400">{t("auth.passwordHint")}</p>
+                )}
+                {mode === "signin" && (
+                  <button
+                    type="button"
+                    onClick={() => { setMode("forgot"); setError(null); setForgotSent(false) }}
+                    className="text-[11px] text-warm-500 hover:text-warm-700 transition-colors"
+                  >
+                    {t("auth.forgotPassword")}
+                  </button>
+                )}
+              </div>
+            )}
+
+            {forgotSent && (
+              <div className="flex items-start gap-2 text-sm text-emerald-600 bg-emerald-50 border border-emerald-100 rounded-lg p-3">
+                <span className="break-all">{t("auth.forgotSent")}</span>
+              </div>
+            )}
 
             {error && (
               <div className="flex items-start gap-2 text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg p-3">
@@ -253,10 +286,22 @@ export default function LoginPage() {
             <Button type="submit" size="lg" className="w-full" disabled={busy}>
               {busy
                 ? t("common.loading")
-                : mode === "signin"
-                  ? t("auth.signIn")
-                  : t("auth.signUp")}
+                : mode === "forgot"
+                  ? t("auth.forgotSubmit")
+                  : mode === "signin"
+                    ? t("auth.signIn")
+                    : t("auth.signUp")}
             </Button>
+
+            {mode === "forgot" && (
+              <button
+                type="button"
+                onClick={() => { setMode("signin"); setError(null); setForgotSent(false) }}
+                className="w-full text-center text-xs text-warm-500 hover:text-warm-700 transition-colors"
+              >
+                {t("auth.backToSignIn")}
+              </button>
+            )}
           </form>
         </DialogContent>
       </Dialog>

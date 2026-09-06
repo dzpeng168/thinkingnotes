@@ -170,6 +170,15 @@
     "accountTitle": "Account",
     "accountDesc": "Your notes are stored in your cloud account and fully isolated between accounts.",
     "signOut": "Sign out",
+    "changePassword": "Change password",
+    "currentPassword": "Current password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm new password",
+    "changePasswordHint": "New password must be at least 6 characters",
+    "changePasswordSubmit": "Update password",
+    "changePasswordSuccess": "Password updated",
+    "passwordMismatch": "The two passwords do not match",
+    "currentPasswordError": "Current password is incorrect",
     "noteLabel": "Note",
     "storageDesc": "All notes are stored as Markdown in the cloud database, bound to your account via row-level security."
   },
@@ -182,7 +191,19 @@
     "signIn": "Sign in",
     "signUp": "Create account",
     "checkEmail": "Signed up! If email confirmation is enabled, please check your inbox before signing in.",
-    "guestMode": "Guest mode"
+    "guestMode": "Guest mode",
+    "forgotPassword": "Forgot password?",
+    "forgotTitle": "Reset password",
+    "forgotDesc": "Enter your registration email and we'll send a reset link.",
+    "forgotSubmit": "Send reset link",
+    "forgotSent": "Reset link sent. Please check your inbox.",
+    "resetTitle": "Set new password",
+    "resetNewPassword": "New password",
+    "resetConfirmPassword": "Confirm new password",
+    "resetSubmit": "Reset password",
+    "resetSuccess": "Password reset. Please sign in with your new password.",
+    "resetTokenInvalid": "Invalid or expired link. Please request a new one.",
+    "backToSignIn": "Back to sign in"
   },
   "guest": {
     "badge": "Guest mode",
@@ -209,6 +230,20 @@
     "featuresTitle": "15 Thinking-Model Templates",
     "featuresSubtitle": "From Cornell Notes to SMART Goals — pick the right framework for the moment",
     "footer": "© 2026 ThinkingNotes · Make thinking organized"
+  },
+  "siteFooter": {
+    "product": "Product",
+    "home": "Home",
+    "pricing": "Pricing",
+    "features": "Features",
+    "blog": "Blog",
+    "newsletter": "Newsletter",
+    "contact": "Contact",
+    "support": "Support",
+    "email": "Email",
+    "copyright": "© 2026 ThinkingNotes.help. All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms & Conditions"
   },
   "tagFilter": {
     "title": "Filter by tags",

@@ -170,6 +170,15 @@
     "accountTitle": "账户",
     "accountDesc": "笔记数据保存在你的云端账户中，不同账户之间完全隔离。",
     "signOut": "退出登录",
+    "changePassword": "修改密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认新密码",
+    "changePasswordHint": "新密码至少 6 位字符",
+    "changePasswordSubmit": "确认修改",
+    "changePasswordSuccess": "密码已更新",
+    "passwordMismatch": "两次输入的新密码不一致",
+    "currentPasswordError": "当前密码不正确",
     "noteLabel": "说明",
     "storageDesc": "所有笔记以 Markdown 形式保存在云端数据库，并通过行级安全策略与你的账户绑定。"
   },
@@ -182,7 +191,19 @@
     "signIn": "登录",
     "signUp": "创建账户",
     "checkEmail": "注册成功！如果开启了邮箱确认，请先查收邮件再登录。",
-    "guestMode": "游客模式"
+    "guestMode": "游客模式",
+    "forgotPassword": "忘记密码？",
+    "forgotTitle": "找回密码",
+    "forgotDesc": "输入注册邮箱，我们会发送重置链接到你的邮箱。",
+    "forgotSubmit": "发送重置链接",
+    "forgotSent": "重置链接已发送，请查收邮箱。",
+    "resetTitle": "设置新密码",
+    "resetNewPassword": "新密码",
+    "resetConfirmPassword": "确认新密码",
+    "resetSubmit": "确认重置",
+    "resetSuccess": "密码已重置，请使用新密码登录。",
+    "resetTokenInvalid": "链接无效或已过期，请重新发起找回密码。",
+    "backToSignIn": "返回登录"
   },
   "guest": {
     "badge": "游客模式",
@@ -209,6 +230,20 @@
     "featuresTitle": "15 种思维模型模板",
     "featuresSubtitle": "从康奈尔笔记到 SMART 目标，为当下一刻选择合适的思考框架",
     "footer": "© 2026 ThinkingNotes · 让思考更有条理"
+  },
+  "siteFooter": {
+    "product": "产品",
+    "home": "首页",
+    "pricing": "定价",
+    "features": "功能",
+    "blog": "博客",
+    "newsletter": "订阅通讯",
+    "contact": "联系",
+    "support": "帮助中心",
+    "email": "邮箱",
+    "copyright": "© 2026 ThinkingNotes.help. All rights reserved.",
+    "privacy": "隐私政策",
+    "terms": "服务条款"
   },
   "tagFilter": {
     "title": "按标签筛选",

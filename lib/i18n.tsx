@@ -119,14 +119,21 @@ function detectInitialLocale(): Locale {
   return DEFAULT_LOCALE
 }
 
-export function I18nProvider({ children }: { children: React.ReactNode }) {
-  // 首次渲染（SSR + hydration）固定使用默认语言，挂载后再读取本地偏好，
-  // 避免 server-rendered HTML 与客户端首帧文本不一致导致 hydration 错误
-  const [locale, setLocaleState] = useState<Locale>(DEFAULT_LOCALE)
+export function I18nProvider({
+  children,
+  initialLocale,
+}: {
+  children: React.ReactNode
+  initialLocale?: Locale
+}) {
+  // 初始状态优先使用服务端从 cookie 读取的 locale，保证 SSR 与客户端水合一致（无闪烁）。
+  // 服务端未传则回退 DEFAULT_LOCALE（首访用户无 cookie 时）。
+  const [locale, setLocaleState] = useState<Locale>(initialLocale ?? DEFAULT_LOCALE)
 
   useEffect(() => {
     const detected = detectInitialLocale()
-    if (detected !== DEFAULT_LOCALE) setLocaleState(detected)
+    if (detected !== locale) setLocaleState(detected)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const messages = MESSAGES[locale]

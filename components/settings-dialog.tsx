@@ -6,9 +6,10 @@ import {
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ChangePasswordDialog } from "@/components/change-password-dialog"
 import { useAuth } from "@/components/auth-context"
 import {
-  Settings2, Globe, Check as CheckIcon, User as UserIcon, LogOut, Info,
+  Settings2, Globe, Check as CheckIcon, User as UserIcon, LogOut, Info, KeyRound,
 } from "lucide-react"
 import { LOCALES as _LOCALES, useT, type Locale } from "@/lib/i18n"
 
@@ -21,6 +22,7 @@ export function SettingsDialog({ open, onOpenChange }: Props) {
   const { t, locale, setLocale } = useT()
   const { user, signOut } = useAuth()
   const [signingOut, setSigningOut] = useState(false)
+  const [pwdOpen, setPwdOpen] = useState(false)
 
   const handleSignOut = async () => {
     setSigningOut(true)
@@ -113,16 +115,27 @@ export function SettingsDialog({ open, onOpenChange }: Props) {
                   <div className="text-xs text-warm-400 mt-1">{t("settings.accountDesc")}</div>
                 </div>
               </div>
-              <Button
-                variant="outline"
-                onClick={handleSignOut}
-                disabled={signingOut}
-                className="shrink-0 text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
-              >
-                <LogOut className="w-4 h-4 mr-1.5" /> {t("settings.signOut")}
-              </Button>
+              <div className="flex flex-col gap-2 shrink-0">
+                <Button
+                  variant="outline"
+                  onClick={() => setPwdOpen(true)}
+                  className="border-warm-200 text-warm-700 hover:bg-warm-50"
+                >
+                  <KeyRound className="w-4 h-4 mr-1.5" /> {t("settings.changePassword")}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={handleSignOut}
+                  disabled={signingOut}
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                >
+                  <LogOut className="w-4 h-4 mr-1.5" /> {t("settings.signOut")}
+                </Button>
+              </div>
             </div>
           </div>
+
+          <ChangePasswordDialog open={pwdOpen} onOpenChange={setPwdOpen} />
 
           <div className="text-xs text-warm-400 leading-relaxed pt-2 border-t border-warm-100">
             <div className="flex items-center gap-1.5 mb-1 text-warm-500">

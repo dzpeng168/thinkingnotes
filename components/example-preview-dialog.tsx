@@ -9,6 +9,7 @@ import { Spinner } from "@/components/ui/loading"
 import { useT } from "@/lib/i18n"
 import { useLocale, useTemplateMeta } from "@/lib/utils"
 import type { TemplateType } from "@/lib/types"
+import { X } from "lucide-react"
 
 // Milkdown 依赖浏览器环境，必须 ssr:false
 const MarkdownView = dynamic(
@@ -76,11 +77,18 @@ export function ExamplePreviewDialog({ ttype, onOpenChange }: Props) {
   }, [ttype, locale])
 
   return (
-    <Dialog open={!!ttype} onOpenChange={onOpenChange} className="max-w-3xl">
-      <DialogContent className="max-w-3xl max-h-[calc(100vh-2rem)] overflow-hidden flex flex-col">
-        <DialogHeader className="shrink-0">
+    <Dialog open={!!ttype} onOpenChange={onOpenChange} className="max-w-6xl">
+      <DialogContent className="max-w-6xl max-h-[calc(100vh-2rem)] overflow-hidden flex flex-col">
+        <DialogHeader className="shrink-0 relative pr-10">
           <DialogTitle>{meta.name} · {t("template.previewExample")}</DialogTitle>
           <DialogDescription>{t("template.exampleDesc")}</DialogDescription>
+          <button
+            onClick={() => onOpenChange(false)}
+            className="absolute top-0 right-0 w-8 h-8 rounded-md text-warm-500 hover:text-warm-900 hover:bg-warm-200 flex items-center justify-center transition-colors"
+            aria-label={t("common.close")}
+          >
+            <X className="w-4 h-4" />
+          </button>
         </DialogHeader>
         <div className="flex-1 min-h-0 overflow-auto rounded-lg border border-warm-200 bg-white p-6">
           {error ? (

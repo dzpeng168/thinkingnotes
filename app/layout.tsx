@@ -1,32 +1,22 @@
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import './globals.css'
 import { AppProviders } from '@/components/app-providers'
 
 const LOCALE_COOKIE_KEY = "thinkingnotes:locale"
+const LANG_ATTR: Record<"zh" | "en", string> = { zh: "zh-CN", en: "en-US" }
 
-// 静态版本的 messages（仅用于 SSR metadata，不引入 bundle）
-const META_MESSAGES: Record<"zh" | "en", { title: string; description: string }> = {
-  zh: {
-    title: 'ThinkingNotes - 思维笔记',
-    description: '帮你把想问题变得更有条理',
-  },
-  en: {
-    title: 'ThinkingNotes',
-    description: 'Make thinking more efficient and organized',
-  },
+function readLocaleFromCookie(): "zh" | "en" {
+  try {
+    const c = cookies().get(LOCALE_COOKIE_KEY)?.value
+    if (c === 'zh' || c === 'en') return c
+  } catch {}
+  return 'en'
 }
-
-function readLocaleFromHeadersCookie(): "zh" | "en" {
-  // App Router 中无法稳定同步读取 cookie 到 metadata（需 use server + cookie()），
-  // 这里按默认语言返回（Web 版默认英文），真实语言由客户端脚本 + Provider 同步改写 <title>。
-  return "en"
-}
-
-const metaInitial = META_MESSAGES[readLocaleFromHeadersCookie()]
 
 export const metadata: Metadata = {
-  title: metaInitial.title,
-  description: metaInitial.description,
+  title: 'ThinkingNotes',
+  description: 'Make thinking more efficient and organized',
 }
 
 // 防止 FOUC：在 React 水合前同步设置 data-theme + <html lang>
@@ -69,13 +59,14 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const locale = readLocaleFromCookie()
   return (
-    <html lang="en-US" suppressHydrationWarning>
+    <html lang={LANG_ATTR[locale]} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-screen bg-warm-50 antialiased">
-        <AppProviders>{children}</AppProviders>
+        <AppProviders initialLocale={locale}>{children}</AppProviders>
       </body>
     </html>
   )

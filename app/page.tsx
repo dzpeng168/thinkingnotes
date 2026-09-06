@@ -14,6 +14,7 @@ import { SettingsDialog } from "@/components/settings-dialog"
 import { TagFilterDialog } from "@/components/tag-filter-dialog"
 import { HotkeysDialog } from "@/components/hotkeys-dialog"
 import { ExamplePreviewDialog } from "@/components/example-preview-dialog"
+import { SiteFooter } from "@/components/site-footer"
 import { useHotkey } from "@/components/hotkeys-context"
 import {
   Search, Plus, Trash2, Edit3, PencilLine, LayoutGrid, ClipboardList, HardHat,
@@ -797,10 +798,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      <footer className="border-t border-warm-200 bg-warm-50/80 py-4 text-center text-xs text-warm-500">
-          {t("app.footer")}
-        </footer>
 
         <NewNoteDialog open={showNew} onOpenChange={setShowNew} />
 
