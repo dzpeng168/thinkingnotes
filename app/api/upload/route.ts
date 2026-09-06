@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const ALLOWED_TYPES = new Set([
   'image/png',

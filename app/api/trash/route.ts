@@ -10,6 +10,7 @@ import {
 import type { NoteListItem } from '@/lib/types'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /** GET /api/trash — 回收站列表（deleted_at 非空，按删除时间倒序） */
 export async function GET() {

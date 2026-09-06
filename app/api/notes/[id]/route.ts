@@ -4,6 +4,7 @@ import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 import type { Note } from '@/lib/types'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const NOTE_COLUMNS = 'id,title,template_type,content,file_path,category_id,created_at,updated_at'
 

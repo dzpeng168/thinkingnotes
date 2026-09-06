@@ -4,6 +4,7 @@ import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 import type { Tag } from '@/lib/types'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const TAG_COLUMNS = 'id,name,color,created_at'
 

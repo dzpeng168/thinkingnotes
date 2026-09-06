@@ -1,10 +1,11 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { TagBadge } from "@/components/ui/tag-badge"
+import { NoteCardSkeleton } from "@/components/ui/loading"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { NewNoteDialog } from "@/components/new-note-dialog"
 import { CategoryTree } from "@/components/category-tree"
@@ -160,6 +161,7 @@ function NoteCard({
 
 export default function HomePage() {
   const router = useRouter()
+  const pathname = usePathname()
   const { t, locale } = useT()
   const [notes, setNotes] = useState<NoteListItem[]>([])
   const [tags, setTags] = useState<TagModel[]>([])
@@ -182,6 +184,10 @@ export default function HomePage() {
   const [showTagFilter, setShowTagFilter] = useState(false)
   const [filterTagIds, setFilterTagIds] = useState<string[]>([])
   const [currentPage, setCurrentPage] = useState(1)
+  // 列表加载状态：true 时渲染骨架屏而非空状态，用动画替代闪烁
+  const [loading, setLoading] = useState(true)
+  // 列表数据最后一次就绪的时间戳，用于触发卡片动画重新播放
+  const [listLoadedAt, setListLoadedAt] = useState<number>(0)
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   // 游客模式：null = 尚未检测（挂载后读取 cookie）；true = 只读浏览示例数据
@@ -251,13 +257,15 @@ export default function HomePage() {
   // 每页展示 4 列 × 2 行 = 8 条
   const PAGE_SIZE = 8
 
-  const refresh = async () => {
-    // 游客模式：使用本地示例数据，不请求后端
-    if (isGuest) {
-      setNotes(GUEST_NOTES); setTags(GUEST_TAGS); setCategories(GUEST_CATEGORIES)
-      return
-    }
+  const refresh = useCallback(async (silent = false) => {
+    // 非静默刷新（例如首次加载、从详情页返回、切换 tab）时展示骨架屏
+    if (!silent) setLoading(true)
     try {
+      // 游客模式：使用本地示例数据，不请求后端
+      if (isGuest) {
+        setNotes(GUEST_NOTES); setTags(GUEST_TAGS); setCategories(GUEST_CATEGORIES)
+        return
+      }
       const [ns, ts, cs] = await Promise.all([
         noteApi.list(),
         tagApi.list(),
@@ -265,13 +273,31 @@ export default function HomePage() {
       ])
       setNotes(ns); setTags(ts); setCategories(cs)
     } catch (e) { console.error(e) }
-  }
+    finally {
+      setLoading(false)
+      // 记录数据就绪的时间戳 → 触发卡片入场动画重新播放
+      setListLoadedAt(Date.now())
+    }
+  }, [isGuest])
 
-  // 挂载且游客检测完成后加载列表
+  // 1. 挂载且游客检测完成后加载列表
+  // 2. pathname 变化：当从详情页 router.push("/") 返回本页时，pathname 从 /note 变回 /，触发刷新
+  // 3. 页面从后台切回前台（tab 切换回来）时刷新，保证数据最新
   useEffect(() => {
     if (isGuest === null) return
+    if (pathname !== "/") return
     void refresh()
-  }, [isGuest])
+  }, [isGuest, pathname, refresh])
+
+  useEffect(() => {
+    const onVisibility = () => {
+      if (document.visibilityState === "visible" && isGuest !== null && pathname === "/") {
+        void refresh(true)
+      }
+    }
+    document.addEventListener("visibilitychange", onVisibility)
+    return () => document.removeEventListener("visibilitychange", onVisibility)
+  }, [isGuest, pathname, refresh])
 
   const openNew = useCallback(() => {
     // 游客模式只读：提示登录后创建
@@ -346,29 +372,46 @@ export default function HomePage() {
   const visibleNotes: NoteListItem[] = (() => {
     if (selection === "all") return notes
     if (selection === "uncategorized") return notes.filter((n) => !n.category_id)
-    // 选中具体分类：包含所有子分类（这里通过原 notes 全表过滤，靠前端 collectDescendantIds）
-    return notes // 下面 useEffect 会重新拉取按分类的笔记
+    if (selection === null) return notes
+    // 选中具体分类：先用全量 notes 做前端过滤作为兜底（catNotes 拉取完成前不会显示错误的全量）
+    const ids = new Set(collectDescendantIds(categories, selection))
+    return notes.filter((n) => n.category_id && ids.has(n.category_id))
   })()
 
   // 选中分类时拉取（含子分类）；游客模式用本地示例数据过滤
   const [catNotes, setCatNotes] = useState<NoteListItem[] | null>(null)
+  const catLoadingRef = useRef(false)
   useEffect(() => {
     if (selection === "all" || selection === "uncategorized" || selection === null) {
       setCatNotes(null)
       return
     }
     if (isGuest === null) return
+    if (pathname !== "/") return
     if (isGuest) {
       const ids = new Set(collectDescendantIds(GUEST_CATEGORIES, selection))
       setCatNotes(GUEST_NOTES.filter((n) => n.category_id && ids.has(n.category_id)))
       return
     }
+    // 切到具体分类时短暂显示骨架，给 API 拉取留出过渡窗口，避免闪烁
+    if (!catLoadingRef.current) {
+      catLoadingRef.current = true
+      setLoading(true)
+    }
     let cancelled = false
     noteApi.byCategory(selection, true).then((ns) => {
-      if (!cancelled) setCatNotes(ns)
-    }).catch(console.error)
+      if (!cancelled) {
+        setCatNotes(ns)
+        setLoading(false)
+        setListLoadedAt(Date.now())
+        catLoadingRef.current = false
+      }
+    }).catch((e) => {
+      console.error(e)
+      if (!cancelled) { setLoading(false); catLoadingRef.current = false }
+    })
     return () => { cancelled = true }
-  }, [selection, isGuest])
+  }, [selection, isGuest, pathname, categories])
 
   // 筛选条件变化时回到第一页
   useEffect(() => {
@@ -619,8 +662,22 @@ export default function HomePage() {
             </div>
           </div>
 
-          {filteredNotes.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-center">
+          {loading ? (
+            // 加载中：显示 8 张骨架卡片（与一页 4×2=8 条尺寸、布局完全一致，无布局跳动）
+            <>
+              <div className="grid grid-cols-4 gap-5 auto-rows-fr">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <NoteCardSkeleton key={`skeleton-${listLoadedAt}-${i}`} />
+                ))}
+              </div>
+              {/* 分页区占位：与真实分页同高，避免底部跳动（opacity 0 占位即可） */}
+              <div aria-hidden className="mt-6 pt-4 border-t border-transparent h-[40px]" />
+            </>
+          ) : filteredNotes.length === 0 ? (
+            <div
+              className="flex flex-col items-center justify-center py-20 text-center animate-fade-in-up"
+              style={{ animationDelay: "0ms" }}
+            >
               <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-warm-200 to-warm-300 flex items-center justify-center mb-6 shadow-warm">
                 <BookOpen className="w-12 h-12 text-warm-600" />
               </div>
@@ -641,16 +698,19 @@ export default function HomePage() {
           ) : viewMode === "list" ? (
             <>
               <div className="grid grid-cols-4 gap-5 auto-rows-fr">
-                {paginatedNotes.map((note) => {
+                {paginatedNotes.map((note, idx) => {
                 const meta = resolveTemplateMeta(note.template_type, locale, (k) => t(k as any))
                 const Icon = TEMPLATE_ICONS[note.template_type] || LayoutGrid
                 const noteCategory = note.category_id
                   ? categories.find((c) => c.id === note.category_id)
                   : null
+                // 交错动画：每页内第 i 张卡片延迟 i×60ms，整批重播由 listLoadedAt（key）保证
+                const delay = Math.min(idx, 16) * 60
                 return (
                   <div
-                    key={note.id}
-                    className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-warm-lg cursor-pointer"
+                    key={`${note.id}-${listLoadedAt}`}
+                    className="group relative flex flex-col rounded-2xl border border-warm-200 bg-white p-6 transition-all hover:border-warm-400 hover:shadow-warm-lg cursor-pointer animate-fade-in-up"
+                    style={{ animationDelay: `${delay}ms` }}
                     onClick={() =>
                       isGuest
                         ? setPreviewTtype(note.template_type as TemplateType)
@@ -736,7 +796,10 @@ export default function HomePage() {
 
               {/* 分页控件（仅列表视图且有数据时显示） */}
               {filteredNotes.length > 0 && (
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-warm-100">
+                <div
+                  className="flex items-center justify-between mt-6 pt-4 border-t border-warm-100 animate-fade-in-up"
+                  style={{ animationDelay: `${Math.min(paginatedNotes.length, 8) * 60 + 60}ms` }}
+                >
                   <div className="text-xs text-warm-500">
                     {t("note.pageInfo", { total: filteredNotes.length, current: safePage, totalPages })}
                   </div>
@@ -793,7 +856,9 @@ export default function HomePage() {
               )}
             </>
           ) : (
-            <CalendarView notes={filteredNotes} />
+            <div key={`calendar-${listLoadedAt}`} className="animate-fade-in-up">
+              <CalendarView notes={filteredNotes} />
+            </div>
           )}
           </div>
         </section>

@@ -12,6 +12,7 @@ import { defaultMarkdownFor, isTemplateType } from '@/lib/server/templates'
 import type { Note, NoteListItem } from '@/lib/types'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/notes

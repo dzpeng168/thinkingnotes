@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /** POST /api/trash/:id/restore — 从回收站恢复（置 deleted_at = NULL） */
 export async function POST(

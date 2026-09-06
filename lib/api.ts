@@ -9,7 +9,13 @@ import type { Note, NoteListItem, Tag, Category } from './types'
 async function call<T>(path: string, init?: RequestInit): Promise<T> {
   try {
     const res = await fetch(`/api${path}`, {
-      headers: { 'Content-Type': 'application/json' },
+      // 禁用 Next.js Data Cache 和浏览器 HTTP 缓存，保证每次返回最新数据
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        Pragma: 'no-cache',
+      },
       ...init,
     })
     if (!res.ok) {

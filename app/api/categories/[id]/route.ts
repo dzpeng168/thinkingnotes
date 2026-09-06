@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /** 判断 descendant 是否为 ancestor 的后代（沿 parent 链上溯，防环路） */
 function isDescendant(

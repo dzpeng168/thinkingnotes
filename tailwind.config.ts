@@ -90,11 +90,23 @@ const config: Config = {
           '50%': { left: '30%', width: '50%' },
           '100%': { left: '100%', width: '40%' },
         },
+        // 骨架屏 shimmer 流光
+        shimmer: {
+          '0%': { backgroundPosition: '-800px 0' },
+          '100%': { backgroundPosition: '800px 0' },
+        },
+        // 卡片淡入 + 轻微上浮
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
         'loading-bar': 'loading-bar 1.4s ease-in-out infinite',
+        shimmer: 'shimmer 1.6s linear infinite',
+        'fade-in-up': 'fade-in-up 0.5s cubic-bezier(0.4, 0, 0.2, 1) both',
       },
     },
   },

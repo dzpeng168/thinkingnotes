@@ -4,6 +4,7 @@ import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 import type { Category } from '@/lib/types'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 const CATEGORY_COLUMNS = 'id,name,parent_id,sort_order,created_at,updated_at'
 

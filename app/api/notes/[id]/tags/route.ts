@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /** POST /api/notes/:id/tags — 给笔记打标签（幂等，对应原 add_tag_to_note） */
 export async function POST(

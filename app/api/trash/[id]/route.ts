@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 /** DELETE /api/trash/:id — 永久删除（物理 DELETE，note_tags 级联清理） */
 export async function DELETE(
