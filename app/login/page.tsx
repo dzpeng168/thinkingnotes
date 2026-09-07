@@ -158,21 +158,21 @@ export default function LoginPage() {
         <p className="text-sm text-warm-600 text-center mb-8">
           {t("landing.featuresSubtitle")}
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 auto-rows-fr">
           {TEMPLATE_KEYS.map((key, i) => {
             const meta = resolveTemplateMeta(key, locale, (k) => t(k as any))
             const Icon = ICONS[meta.icon]
             return (
               <div
                 key={key}
-                className="flex items-start gap-3 rounded-xl border border-warm-200 bg-white p-4 hover:border-warm-400 hover:shadow-warm transition-all"
+                className="flex items-start gap-3 rounded-xl border border-warm-200 bg-white p-4 hover:border-warm-400 hover:shadow-warm transition-all h-full"
               >
                 <div className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${ICON_STYLES[i % ICON_STYLES.length]}`}>
                   {Icon && <Icon className="w-4 h-4" />}
                 </div>
                 <div className="min-w-0">
                   <div className="font-semibold text-sm text-warm-800">{meta.name}</div>
-                  <div className="text-xs text-warm-600 leading-snug mt-0.5 line-clamp-2">{meta.desc}</div>
+                  <div className="text-xs text-warm-600 leading-relaxed mt-0.5">{meta.desc}</div>
                 </div>
               </div>
             )
