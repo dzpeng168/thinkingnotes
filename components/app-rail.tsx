@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { BookOpen, Keyboard, Tag as TagIcon, Settings, Trash2 } from "lucide-react"
 import { useT } from "@/lib/i18n"
 
@@ -17,9 +18,15 @@ export function AppRail({ onTagsClick, onSettingsClick, onTrashClick, onHotkeysC
   return (
     <nav className="w-14 shrink-0 bg-gradient-to-b from-warm-100 to-warm-50 border-r border-warm-200 flex flex-col items-center justify-start gap-3 py-4">
       {/* 顶部 Logo */}
-      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm-500 to-warm-700 text-white flex items-center justify-center shadow-warm">
+      <Link
+        href="/login"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="回官网首页"
+        className="w-10 h-10 rounded-xl bg-gradient-to-br from-warm-500 to-warm-700 text-white flex items-center justify-center shadow-warm hover:opacity-90 transition-opacity"
+      >
         <BookOpen className="w-5 h-5" />
-      </div>
+      </Link>
 
       {/* 底部按钮 */}
       <div className="flex flex-col gap-2">

@@ -109,20 +109,20 @@ export const GUEST_NOTES_ZH: NoteListItem[] = [
 
 /** 英文：14 类思维模型 × 各一条示例笔记 */
 export const GUEST_NOTES_EN: NoteListItem[] = [
-  note("guest-note-cornell", "Chapter 3 — Three-Level Information Processing Model (Cognitive Psychology)", "cornell", CAT_IDS.study, "2026-09-04T10:24:00.000Z", [TAG_STUDY]),
-  note("guest-note-eisenhower", "Weekly Task List — Important / Urgent Quadrant Sort", "eisenhower_matrix", CAT_IDS.time, "2026-09-05T08:12:00.000Z", [TAG_WORK, TAG_PLAN]),
-  note("guest-note-4d", "Today's To-Dos — 4D Method: Do / Delay / Delegate / Delete", "four_d_work", CAT_IDS.time, "2026-09-05T08:40:00.000Z", [TAG_WORK]),
-  note("guest-note-monthly", "September 2026 Work Plan", "monthly_plan", CAT_IDS.plan, "2026-08-31T21:05:00.000Z", [TAG_WORK, TAG_PLAN]),
-  note("guest-note-weekly", "Week 36 Plan — Core Goals & Daily Schedule", "weekly_plan", CAT_IDS.plan, "2026-09-01T09:18:00.000Z", [TAG_WORK, TAG_PLAN]),
-  note("guest-note-daily", "Sept 5 Daily Plan — Top Three for Today", "daily_plan", CAT_IDS.plan, "2026-09-05T07:55:00.000Z", [TAG_PLAN]),
-  note("guest-note-5w2h", "Q3 Product Review Meeting Notes", "meeting_5w2h", CAT_IDS.meeting, "2026-09-03T16:42:00.000Z", [TAG_WORK, TAG_COMM]),
-  note("guest-note-prep", "Why Everyone Should Keep a Work Journal (PREP Framework)", "prep_method", CAT_IDS.express, "2026-09-02T14:30:00.000Z", [TAG_COMM]),
-  note("guest-note-ride", "Persuading the Team to Adopt a Graded Release Plan (RIDE Model)", "ride", CAT_IDS.express, "2026-09-04T15:20:00.000Z", [TAG_COMM, TAG_WORK]),
-  note("guest-note-smart", "Q4 Personal Growth — SMART Goals", "smart_goal", CAT_IDS.goalSet, "2026-08-30T20:10:00.000Z", [TAG_PLAN]),
-  note("guest-note-woop", "Half Marathon in Three Months — WOOP Plan", "woop", CAT_IDS.goalSet, "2026-09-01T19:36:00.000Z", [TAG_PLAN]),
-  note("guest-note-grai", "\"Note Template Feature\" Launch — GRAI Retrospective", "grai", CAT_IDS.retro, "2026-09-04T18:02:00.000Z", [TAG_RETRO, TAG_WORK]),
-  note("guest-note-sixhats", "Should We Launch a Free Tier? Six Thinking Hats Analysis", "six_hats", CAT_IDS.product, "2026-09-02T11:47:00.000Z", [TAG_PRODUCT]),
-  note("guest-note-empathy", "E-Learning User Empathy Map", "empathy_map", CAT_IDS.product, "2026-09-03T10:26:00.000Z", [TAG_PRODUCT]),
+  note("guest-note-cornell", "Chapter 3 — Three-Level Information Processing Model (Cognitive Psychology)", "cornell", CAT_IDS.study, "2026-09-04T10:24:00.000Z", [TAG_STUDY_EN]),
+  note("guest-note-eisenhower", "Weekly Task List — Important / Urgent Quadrant Sort", "eisenhower_matrix", CAT_IDS.time, "2026-09-05T08:12:00.000Z", [TAG_WORK_EN, TAG_PLAN_EN]),
+  note("guest-note-4d", "Today's To-Dos — 4D Method: Do / Delay / Delegate / Delete", "four_d_work", CAT_IDS.time, "2026-09-05T08:40:00.000Z", [TAG_WORK_EN]),
+  note("guest-note-monthly", "September 2026 Work Plan", "monthly_plan", CAT_IDS.plan, "2026-08-31T21:05:00.000Z", [TAG_WORK_EN, TAG_PLAN_EN]),
+  note("guest-note-weekly", "Week 36 Plan — Core Goals & Daily Schedule", "weekly_plan", CAT_IDS.plan, "2026-09-01T09:18:00.000Z", [TAG_WORK_EN, TAG_PLAN_EN]),
+  note("guest-note-daily", "Sept 5 Daily Plan — Top Three for Today", "daily_plan", CAT_IDS.plan, "2026-09-05T07:55:00.000Z", [TAG_PLAN_EN]),
+  note("guest-note-5w2h", "Q3 Product Review Meeting Notes", "meeting_5w2h", CAT_IDS.meeting, "2026-09-03T16:42:00.000Z", [TAG_WORK_EN, TAG_COMM_EN]),
+  note("guest-note-prep", "Why Everyone Should Keep a Work Journal (PREP Framework)", "prep_method", CAT_IDS.express, "2026-09-02T14:30:00.000Z", [TAG_COMM_EN]),
+  note("guest-note-ride", "Persuading the Team to Adopt a Graded Release Plan (RIDE Model)", "ride", CAT_IDS.express, "2026-09-04T15:20:00.000Z", [TAG_COMM_EN, TAG_WORK_EN]),
+  note("guest-note-smart", "Q4 Personal Growth — SMART Goals", "smart_goal", CAT_IDS.goalSet, "2026-08-30T20:10:00.000Z", [TAG_PLAN_EN]),
+  note("guest-note-woop", "Half Marathon in Three Months — WOOP Plan", "woop", CAT_IDS.goalSet, "2026-09-01T19:36:00.000Z", [TAG_PLAN_EN]),
+  note("guest-note-grai", "\"Note Template Feature\" Launch — GRAI Retrospective", "grai", CAT_IDS.retro, "2026-09-04T18:02:00.000Z", [TAG_RETRO_EN, TAG_WORK_EN]),
+  note("guest-note-sixhats", "Should We Launch a Free Tier? Six Thinking Hats Analysis", "six_hats", CAT_IDS.product, "2026-09-02T11:47:00.000Z", [TAG_PRODUCT_EN]),
+  note("guest-note-empathy", "E-Learning User Empathy Map", "empathy_map", CAT_IDS.product, "2026-09-03T10:26:00.000Z", [TAG_PRODUCT_EN]),
 ]
 
 /** 根据当前语言返回游客示例数据。默认（未知）回退到中文。 */
