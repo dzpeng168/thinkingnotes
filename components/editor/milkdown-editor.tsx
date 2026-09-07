@@ -482,56 +482,60 @@ function MilkdownEditor({ value, onChange, initialMode }: Props) {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
-      {/* 模式切换始终可见，源码模式也能切回 */}
       {mode === "source" ? (
-        <div className="flex items-center gap-0.5 px-3 py-1.5 border-b border-warm-200 bg-warm-50/60 shrink-0">
-          <ModeSwitcher mode={mode} setMode={setMode} />
-        </div>
+        <>
+          {/* 模式切换始终可见，源码模式也能切回 */}
+          <div className="flex items-center gap-0.5 px-3 py-1.5 border-b border-warm-200 bg-warm-50/60 shrink-0">
+            <ModeSwitcher mode={mode} setMode={setMode} />
+          </div>
+          <SourceEditor value={value} onChange={onChange} />
+        </>
       ) : (
-        <Toolbar
-          mode={mode}
-          setMode={setMode}
-          onRunReady={(fn) => { runRef.current = fn }}
-        />
-      )}
-
-      {mode === "source" ? (
-        <SourceEditor value={value} onChange={onChange} />
-      ) : (
-        <div className="flex-1 min-h-0 flex">
-          <MilkdownProvider>
-            <div className="flex-1 min-h-0 flex flex-col">
-              <div className="flex-1 min-h-0 overflow-auto">
-                <MilkdownCore
-                  value={value}
-                  onChange={onChange}
-                  editable={mode !== "preview"}
-                />
-              </div>
-            </div>
-          </MilkdownProvider>
-
-          {mode === "split" && (
-            <>
-              <div className="w-px bg-warm-200 shrink-0" />
-              <MilkdownProvider>
-                <div className="flex-1 min-h-0 flex flex-col">
-                  <div className="flex items-center gap-1 px-3 py-1.5 border-b border-warm-200 bg-warm-50/60 shrink-0 text-xs text-warm-500">
-                    <Eye size={13} />
-                    <span>{t("editor.previewPane")}</span>
-                  </div>
-                  <div className="flex-1 min-h-0 overflow-auto">
-                    <MilkdownCore
-                      value={value}
-                      editable={false}
-                      syncOnValueChange
-                    />
-                  </div>
+        /* Toolbar 必须与主编辑器同处一个 MilkdownProvider：
+           useInstance 依赖 Provider 注入的 context，放在 Provider 外会拿到空 context，
+           getInstance() 抛 "Cannot read properties of undefined (reading 'current')"，
+           曾表现为图片上传成功但插入时报"图片上传失败"，且全部工具栏按钮失效 */
+        <MilkdownProvider>
+          <div className="flex-1 min-h-0 flex flex-col">
+            <Toolbar
+              mode={mode}
+              setMode={setMode}
+              onRunReady={(fn) => { runRef.current = fn }}
+            />
+            <div className="flex-1 min-h-0 flex">
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="flex-1 min-h-0 overflow-auto">
+                  <MilkdownCore
+                    value={value}
+                    onChange={onChange}
+                    editable={mode !== "preview"}
+                  />
                 </div>
-              </MilkdownProvider>
-            </>
-          )}
-        </div>
+              </div>
+
+              {mode === "split" && (
+                <>
+                  <div className="w-px bg-warm-200 shrink-0" />
+                  <MilkdownProvider>
+                    <div className="flex-1 min-h-0 flex flex-col">
+                      <div className="flex items-center gap-1 px-3 py-1.5 border-b border-warm-200 bg-warm-50/60 shrink-0 text-xs text-warm-500">
+                        <Eye size={13} />
+                        <span>{t("editor.previewPane")}</span>
+                      </div>
+                      <div className="flex-1 min-h-0 overflow-auto">
+                        <MilkdownCore
+                          value={value}
+                          editable={false}
+                          syncOnValueChange
+                        />
+                      </div>
+                    </div>
+                  </MilkdownProvider>
+                </>
+              )}
+            </div>
+          </div>
+        </MilkdownProvider>
       )}
     </div>
   )
