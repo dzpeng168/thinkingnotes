@@ -52,6 +52,7 @@ import { callCommand } from "@milkdown/kit/utils"
 import { nord } from "@milkdown/theme-nord"
 import { useT } from "@/lib/i18n"
 import { uploadImage } from "@/lib/api"
+import { MAX_IMAGE_SIZE_BYTES } from "@/lib/constants"
 
 type Mode = "preview" | "editor" | "split" | "source"
 
@@ -184,6 +185,10 @@ function Toolbar({ mode, setMode, onRunReady }: ToolbarProps) {
     input.onchange = async () => {
       const file = input.files?.[0]
       if (!file) return
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        alert(t("editor.imageSizeExceeded", { maxKb: MAX_IMAGE_SIZE_BYTES / 1024, currentKb: Math.ceil(file.size / 1024) }))
+        return
+      }
       try {
         const url = await uploadImage(file)
         run(insertImageCommand.key, { src: url })

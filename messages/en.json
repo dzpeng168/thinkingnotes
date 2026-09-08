@@ -341,6 +341,7 @@
     "previewPane": "Preview",
     "linkPrompt": "Enter link URL:",
     "imageUploadFailed": "Image upload failed: ",
+    "imageSizeExceeded": "Image must be ≤ {maxKb}KB (selected: {currentKb}KB)",
     "searchHint": "Tip: press Ctrl+F to search within the page",
     "bold": "Bold (Ctrl+B)",
     "italic": "Italic (Ctrl+I)",

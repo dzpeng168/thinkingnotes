@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { v4 as uuidv4 } from 'uuid'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireUser, unauthorized, jsonError } from '@/lib/server/api-helpers'
+import { MAX_IMAGE_SIZE_BYTES } from '@/lib/constants'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
   const file = form?.get('file')
   if (!(file instanceof File)) return jsonError('缺少文件')
   if (!ALLOWED_TYPES.has(file.type)) return jsonError('仅支持图片文件（png/jpg/gif/webp/svg/bmp）')
+  if (file.size > MAX_IMAGE_SIZE_BYTES) {
+    return jsonError(`图片大小不能超过 ${MAX_IMAGE_SIZE_BYTES / 1024}KB（当前 ${Math.ceil(file.size / 1024)}KB）`, 413)
+  }
 
   const ext = EXT_BY_TYPE[file.type] ?? 'png'
   const storagePath = `${user.id}/${uuidv4()}.${ext}`

@@ -341,6 +341,7 @@
     "previewPane": "预览",
     "linkPrompt": "输入链接地址：",
     "imageUploadFailed": "图片上传失败：",
+    "imageSizeExceeded": "图片大小不能超过 {maxKb}KB（当前 {currentKb}KB）",
     "searchHint": "提示：按 Ctrl+F 可在页面内搜索内容",
     "bold": "加粗 (Ctrl+B)",
     "italic": "斜体 (Ctrl+I)",
