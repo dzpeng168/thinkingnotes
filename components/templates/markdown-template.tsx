@@ -18,6 +18,8 @@ interface Props {
   noteId: string
   /** 初始编辑器模式（新建笔记落地时传 "editor"） */
   initialMode?: "preview" | "editor" | "split" | "source"
+  /** 强制只读预览模式 */
+  readOnly?: boolean
 }
 
 /**
@@ -30,8 +32,8 @@ interface Props {
  *
  * 用户在同一个 Milkdown 编辑器里编辑整篇 markdown，标题作为段落分隔即"布局"。
  */
-export function MarkdownTemplate({ value, onChange, initialMode }: Props) {
+export function MarkdownTemplate({ value, onChange, initialMode, readOnly }: Props) {
   return (
-    <MilkdownEditor value={value} onChange={onChange} initialMode={initialMode} />
+    <MilkdownEditor value={value} onChange={onChange} initialMode={initialMode} readOnly={readOnly} />
   )
 }

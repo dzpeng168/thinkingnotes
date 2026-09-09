@@ -61,6 +61,8 @@ interface Props {
   onChange: (md: string) => void
   /** 初始模式，默认 preview；新建笔记落地时传 editor 直接进入编辑 */
   initialMode?: Mode
+  /** 强制只读预览模式（移动端浏览用）：隐藏工具栏、禁用所有编辑能力 */
+  readOnly?: boolean
 }
 
 type IconType = typeof Bold
@@ -400,10 +402,10 @@ function SourceEditor({ value, onChange }: SourceEditorProps) {
   )
 }
 
-function MilkdownEditor({ value, onChange, initialMode }: Props) {
+function MilkdownEditor({ value, onChange, initialMode, readOnly = false }: Props) {
   const { t } = useT()
-  const [mode, setMode] = useState<Mode>(initialMode ?? "preview")
-  const modeRef = useRef<Mode>(initialMode ?? "preview")
+  const [mode, setMode] = useState<Mode>(readOnly ? "preview" : (initialMode ?? "preview"))
+  const modeRef = useRef<Mode>(readOnly ? "preview" : (initialMode ?? "preview"))
   const runRef = useRef<(key: Parameters<typeof callCommand>[0], payload?: unknown) => void>()
   const { register, unregister, setScope } = useHotkeys()
 
@@ -487,7 +489,18 @@ function MilkdownEditor({ value, onChange, initialMode }: Props) {
 
   return (
     <div className="flex-1 min-h-0 flex flex-col">
-      {mode === "source" ? (
+      {readOnly ? (
+        /* 只读模式：纯预览，无工具栏，无模式切换 */
+        <MilkdownProvider>
+          <div className="flex-1 min-h-0 overflow-auto">
+            <MilkdownCore
+              value={value}
+              editable={false}
+              syncOnValueChange
+            />
+          </div>
+        </MilkdownProvider>
+      ) : mode === "source" ? (
         <>
           {/* 模式切换始终可见，源码模式也能切回 */}
           <div className="flex items-center gap-0.5 px-3 py-1.5 border-b border-warm-200 bg-warm-50/60 shrink-0">

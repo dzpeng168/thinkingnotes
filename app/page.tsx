@@ -28,6 +28,7 @@ import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
 import { collectDescendantIds } from "@/lib/category"
 import { getGuestData } from "@/lib/guest-data"
 import { useT } from "@/lib/i18n"
+import { useIsMobile } from "@/lib/use-mobile"
 import type { NoteListItem, Tag as TagModel, Category, TemplateType } from "@/lib/types"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -163,6 +164,9 @@ export default function HomePage() {
   const router = useRouter()
   const pathname = usePathname()
   const { t, locale } = useT()
+  const isMobile = useIsMobile()
+  // 移动端也视为只读：隐藏所有创建/编辑/删除入口
+  const mobileReadOnly = isMobile
   const [notes, setNotes] = useState<NoteListItem[]>([])
   const [tags, setTags] = useState<TagModel[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -301,13 +305,17 @@ export default function HomePage() {
   }, [isGuest, pathname, refresh])
 
   const openNew = useCallback(() => {
-    // 游客模式只读：提示登录后创建
+    // 游客模式 / 移动端：只读，提示登录或回桌面端创建
     if (isGuest) {
       alert(t("guest.previewOnly"))
       return
     }
+    if (mobileReadOnly) {
+      alert(t("mobile.readOnlyHint"))
+      return
+    }
     setShowNew(true)
-  }, [isGuest, t])
+  }, [isGuest, mobileReadOnly, t])
   const openSettings = useCallback(() => setShowSettings(true), [])
   const focusSearch = useCallback(() => {
     searchInputRef.current?.focus()
@@ -532,7 +540,8 @@ export default function HomePage() {
 
   return (
     <div className={`min-h-screen bg-gradient-to-b from-warm-100/70 via-warm-50 to-warm-50 flex ${isResizing ? "select-none" : ""}`} style={isResizing ? { cursor: "col-resize" } : undefined}>
-      {/* 最左侧竖条 Rail */}
+      {/* 最左侧竖条 Rail — 移动端隐藏 */}
+      {!isMobile && (
       <AppRail
         onTagsClick={() => setShowTagFilter(true)}
         onSettingsClick={() => setShowSettings(true)}
@@ -540,21 +549,24 @@ export default function HomePage() {
         onHotkeysClick={() => setShowHotkeys(true)}
         trashCount={trashedNotes.length}
       />
+      )}
 
       <div className="flex-1 min-w-0 flex flex-col">
-        <header className="relative overflow-hidden bg-gradient-to-r from-warm-100 via-warm-50 to-warm-100 border-b border-warm-200">
-          {/* 顶栏柔和光斑 */}
+        <header className={`relative overflow-hidden bg-gradient-to-r from-warm-100 via-warm-50 to-warm-100 border-b border-warm-200 ${isMobile ? "" : ""}`}>
+          {/* 顶栏柔和光斑 — 移动端隐藏 */}
+          {!isMobile && (
           <div aria-hidden className="pointer-events-none absolute inset-0">
             <div className="absolute -top-24 left-[8%] w-72 h-48 rounded-full bg-rose-200/30 blur-3xl" />
             <div className="absolute -top-24 right-[8%] w-72 h-48 rounded-full bg-amber-200/30 blur-3xl" />
             <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[560px] h-32 rounded-full bg-sky-100/40 blur-3xl" />
           </div>
-          <div className="relative max-w-7xl mx-auto px-6 py-5 flex items-center justify-between flex-wrap gap-4">
+          )}
+          <div className={`relative ${isMobile ? "" : "max-w-7xl mx-auto"} px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between flex-wrap gap-3 sm:gap-4`}>
             <div>
-              <h1 className="text-2xl font-bold text-warm-900 tracking-tight">{t("app.name")}</h1>
+              <h1 className={`font-bold text-warm-900 tracking-tight ${isMobile ? "text-lg" : "text-2xl"}`}>{t("app.name")}</h1>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-80">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <div className={`relative ${isMobile ? "w-full sm:w-80" : "w-80"}`}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400" />
                 <Input
                   ref={searchInputRef}
@@ -575,9 +587,14 @@ export default function HomePage() {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => setShowNew(true)} size="lg">
-                  <Plus className="w-5 h-5" /> {t("note.new")}
-                </Button>
+                <>
+                  {/* 移动端隐藏"新建笔记"按钮（改为只读浏览） */}
+                  {!mobileReadOnly && (
+                  <Button onClick={() => setShowNew(true)} size="lg" className={isMobile ? "hidden" : ""}>
+                    <Plus className="w-5 h-5" /> {t("note.new")}
+                  </Button>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -594,7 +611,8 @@ export default function HomePage() {
         )}
 
         <main className="flex-1 w-full py-6 flex">
-        {/* 左侧目录树（可拖拽调整宽度）— 贴左，仅小 padding */}
+        {/* 左侧目录树（可拖拽调整宽度）— 移动端隐藏 */}
+        {!isMobile && (
         <aside
           className="shrink-0 relative ml-5"
           style={{ width: `${sidebarWidth}px` }}
@@ -607,9 +625,10 @@ export default function HomePage() {
             selectedId={selection}
             onSelect={setSelection}
             onChanged={refresh}
-            readOnly={!!isGuest}
+            readOnly={!!isGuest || mobileReadOnly}
           />
-          {/* 拖拽分隔条 */}
+          {/* 拖拽分隔条 — 移动端隐藏 */}
+          {!isMobile && (
           <div
             onMouseDown={onResizeStart}
             onDoubleClick={() => {
@@ -627,16 +646,20 @@ export default function HomePage() {
               }`}
             />
           </div>
+          )}
         </aside>
+        )}
 
         {/* 右侧笔记列表 */}
-        <section className="flex-1 min-w-0 px-6 ml-2">
-          <div className="max-w-7xl mx-auto w-full">
+        <section className={`flex-1 min-w-0 ${isMobile ? "px-3" : "px-6 ml-2"}`}>
+          <div className={`${isMobile ? "" : "max-w-7xl mx-auto"} w-full`}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-warm-800">
+            <h2 className={`font-semibold text-warm-800 ${isMobile ? "text-base" : "text-lg"}`}>
               {currentCategoryName}
               <span className="ml-2 text-sm text-warm-500">{t("note.countText", { count: filteredNotes.length })}</span>
             </h2>
+            {/* 视图切换 — 移动端隐藏（默认列表） */}
+            {!isMobile && (
             <div className="flex items-center rounded-md border border-warm-200 p-0.5 bg-white">
               <button
                 onClick={() => setViewMode("list")}
@@ -661,17 +684,17 @@ export default function HomePage() {
                 <Calendar className="w-3.5 h-3.5" /> {t("note.viewCalendar")}
               </button>
             </div>
+            )}
           </div>
 
           {loading ? (
-            // 加载中：显示 8 张骨架卡片（与一页 4×2=8 条尺寸、布局完全一致，无布局跳动）
+            // 加载中：显示骨架卡片
             <>
-              <div className="grid grid-cols-4 gap-5 auto-rows-fr">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 auto-rows-fr">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <NoteCardSkeleton key={`skeleton-${listLoadedAt}-${i}`} />
                 ))}
               </div>
-              {/* 分页区占位：与真实分页同高，避免底部跳动（opacity 0 占位即可） */}
               <div aria-hidden className="mt-6 pt-4 border-t border-transparent h-[40px]" />
             </>
           ) : filteredNotes.length === 0 ? (
@@ -690,7 +713,7 @@ export default function HomePage() {
                   ? t("note.noNotesHintFiltered")
                   : t("note.noNotesHintEmpty")}
               </p>
-              {!isGuest && (
+              {!isGuest && !mobileReadOnly && (
                 <Button size="lg" onClick={() => setShowNew(true)}>
                   <Plus className="w-5 h-5" /> {t("note.createFirst")}
                 </Button>
@@ -698,15 +721,15 @@ export default function HomePage() {
             </div>
           ) : viewMode === "list" ? (
             <>
-              <div className="grid grid-cols-4 gap-5 auto-rows-fr">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 auto-rows-fr">
                 {paginatedNotes.map((note, idx) => {
                 const meta = resolveTemplateMeta(note.template_type, locale, (k) => t(k as any))
                 const Icon = TEMPLATE_ICONS[note.template_type] || LayoutGrid
                 const noteCategory = note.category_id
                   ? categories.find((c) => c.id === note.category_id)
                   : null
-                // 交错动画：每页内第 i 张卡片延迟 i×60ms，整批重播由 listLoadedAt（key）保证
                 const delay = Math.min(idx, 16) * 60
+                // 移动端/只读模式下：点击卡片时游客仍预览，其他用户也进入详情（详情页移动端只读）
                 return (
                   <div
                     key={`${note.id}-${listLoadedAt}`}
@@ -718,8 +741,8 @@ export default function HomePage() {
                         : router.push(`/note?id=${note.id}`)
                     }
                   >
-                    {/* hover 操作按钮 - 绝对定位右上（游客模式只读，不展示） */}
-                    {!isGuest && (
+                    {/* hover 操作按钮 — 游客/只读模式/移动端均隐藏 */}
+                    {!isGuest && !mobileReadOnly && (
                     <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
                       <button
                         className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"

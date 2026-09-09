@@ -220,6 +220,9 @@
       "product": "产品"
     }
   },
+  "mobile": {
+    "readOnlyHint": "移动端仅支持浏览笔记，请在电脑端创建或编辑笔记。"
+  },
   "landing": {
     "heroSubtitle": "15 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验，从灵感到行动一步到位",
     "startFree": "免费开始",

@@ -10,6 +10,7 @@ import { TemplateRenderer } from "@/components/templates/template-renderer"
 import { noteApi, tagApi, categoryApi } from "@/lib/api"
 import { formatDate, cn, useTemplateMeta } from "@/lib/utils"
 import { useT } from "@/lib/i18n"
+import { useIsMobile } from "@/lib/use-mobile"
 import type { Note, Tag as TagModel, TemplateType } from "@/lib/types"
 import { useHotkey } from "@/components/hotkeys-context"
 import { SettingsDialog } from "@/components/settings-dialog"
@@ -35,9 +36,10 @@ function NoteEditContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const { t, locale } = useT()
+  const isMobile = useIsMobile()
   const noteId = searchParams.get("id") || ""
   // 从"新建笔记"落地时（edit=1）直接进入编辑模式
-  const startInEditor = searchParams.get("edit") === "1"
+  const startInEditor = !isMobile && searchParams.get("edit") === "1"
 
   const [note, setNote] = useState<Note | null>(null)
   const [noteTags, setNoteTags] = useState<TagModel[]>([])
@@ -322,10 +324,10 @@ function NoteEditContent() {
             </Button>
           </Link>
 
-          <div className="h-6 w-px bg-warm-200" />
+          <div className="h-6 w-px bg-warm-200 hidden sm:block" />
 
-          <div className="flex-1 min-w-[240px] max-w-2xl">
-            {editingTitle ? (
+          <div className={`flex-1 min-w-[120px] max-w-2xl ${isMobile ? "min-w-0" : "min-w-[240px]"}`}>
+            {editingTitle && !isMobile ? (
               <Input
                 value={title}
                 onChange={(e) => onTitleChange(e.target.value)}
@@ -335,17 +337,18 @@ function NoteEditContent() {
               />
             ) : (
               <div
-                onClick={() => setEditingTitle(true)}
-                className="flex items-center gap-2 group cursor-text px-2 py-1 rounded-lg hover:bg-warm-100"
+                onClick={() => !isMobile && setEditingTitle(true)}
+                className={`flex items-center gap-2 group ${isMobile ? "" : "cursor-text"} px-2 py-1 rounded-lg ${isMobile ? "" : "hover:bg-warm-100"}`}
               >
-                <h1 className="text-xl font-bold text-warm-900 truncate">
+                <h1 className={`text-xl font-bold text-warm-900 truncate ${isMobile ? "text-lg" : ""}`}>
                   {title || <span className="text-warm-400 italic">{t("note.clickToInputTitle")}</span>}
                 </h1>
-                <Edit3 className="w-4 h-4 text-warm-400 opacity-0 group-hover:opacity-100" />
+                {!isMobile && <Edit3 className="w-4 h-4 text-warm-400 opacity-0 group-hover:opacity-100" />}
               </div>
             )}
           </div>
 
+          {!isMobile && (
           <div className="flex items-center gap-1 ml-auto">
             <Button variant="ghost" size="sm" className="text-warm-700 hover:text-warm-900 hover:bg-warm-100" onClick={exportMarkdown} disabled={exporting !== null}>
               <FileText className="w-4 h-4" /> {t("note.exportMarkdown")}
@@ -379,6 +382,7 @@ function NoteEditContent() {
               )}
             </div>
           </div>
+          )}
         </div>
         <div className="px-5 pb-3 flex items-center gap-2 flex-wrap">
           {/* 笔记分类 chip */}
@@ -398,29 +402,31 @@ function NoteEditContent() {
             {meta.name}
           </TagBadge>
 
-          {/* 标签 chips */}
+          {/* 标签 chips — 移动端只读时不可关闭 */}
           {noteTags.map(t => (
             <TagBadge
               key={t.id}
               color={t.color}
-              closable
-              onClose={() => toggleTag(t.id, false)}
+              closable={!isMobile}
+              onClose={!isMobile ? () => toggleTag(t.id, false) : undefined}
             >{t.name}</TagBadge>
           ))}
 
-          {/* 管理标签入口 */}
+          {/* 管理标签入口 — 移动端隐藏 */}
+          {!isMobile && (
           <button
             onClick={() => setTagDialog(true)}
             className="inline-flex items-center gap-1 rounded-full border border-dashed border-warm-300 px-2.5 py-0.5 text-xs text-warm-500 hover:border-warm-400 hover:text-warm-700 transition-colors"
           >
             <Plus className="w-3 h-3" /> {t("note.createLabel")}
           </button>
+          )}
 
-          {/* 右侧时间信息 */}
-          <div className="ml-auto text-xs text-warm-500 flex items-center gap-3">
+          {/* 右侧时间信息 — 移动端简化 */}
+          <div className={`${isMobile ? "" : "ml-auto"} text-xs text-warm-500 flex items-center gap-3 flex-wrap`}>
             <span>{t("note.createdAt")}{formatDate(note.created_at, locale)}</span>
-            <span>{t("note.updatedAtLabel")}{formatDate(note.updated_at, locale)}</span>
-            {meta.desc && <span className="hidden md:inline text-warm-600">💡 {meta.desc}</span>}
+            <span className="hidden sm:inline">{t("note.updatedAtLabel")}{formatDate(note.updated_at, locale)}</span>
+            {!isMobile && meta.desc && <span className="hidden md:inline text-warm-600">💡 {meta.desc}</span>}
           </div>
         </div>
       </header>
@@ -435,6 +441,7 @@ function NoteEditContent() {
             onChange={onContentChange}
             noteId={noteId}
             initialMode={startInEditor ? "editor" : undefined}
+            readOnly={isMobile}
           />
         </div>
       </main>

@@ -220,6 +220,9 @@
       "product": "Product"
     }
   },
+  "mobile": {
+    "readOnlyHint": "Mobile browsing is read-only. Please use a desktop to create or edit notes."
+  },
   "landing": {
     "heroSubtitle": "15 thinking-model templates · Cloud sync · Native Markdown — from idea to action in one step",
     "startFree": "Start for free",
