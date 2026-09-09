@@ -7,6 +7,8 @@ import { NextResponse, type NextRequest } from 'next/server'
  * - 游客模式（tn_guest=1 cookie）放行页面路由，仅作前端示例预览
  * - 已登录访问 /login → 重定向 /
  * - 静态资源与 /api 不在此处理（API 各自返回 401 JSON，游客不可写）
+ *
+ * 性能：用 getSession() 本地 decode cookie，零 RPC（getUser() 每次去 Auth server 验签要 300ms+）。
  */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request })
@@ -30,9 +32,11 @@ export async function middleware(request: NextRequest) {
     },
   )
 
+  // getSession()：自动从 cookie 读 access token，本地 JWT decode，零 RPC
   const {
-    data: { user },
-  } = await supabase.auth.getUser()
+    data: { session },
+  } = await supabase.auth.getSession()
+  const user = session?.user ?? null
 
   const { pathname } = request.nextUrl
   const isGuest = request.cookies.get('tn_guest')?.value === '1'

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient, type AdminClient } from '@/lib/supabase/admin'
-import { cookies } from 'next/headers'
 import type { Tag } from '@/lib/types'
 
 /** 列表查询字段（不含 content，与桌面版 get_notes 一致） */
@@ -12,70 +12,23 @@ export function jsonError(message: string, status = 400) {
 }
 
 /**
- * 本地 base64url → base64 解码。
- */
-function base64urlDecode(str: string): string {
-  const pad = '='.repeat((4 - (str.length % 4)) % 4)
-  const b64 = (str + pad).replace(/-/g, '+').replace(/_/g, '/')
-  return Buffer.from(b64, 'base64').toString('utf-8')
-}
-
-interface DecodedJwt {
-  sub?: string
-  email?: string
-  role?: string
-}
-
-/**
- * 本地 decode Supabase access token —— 零网络 RPC。
- * Supabase access token 是标准 JWT，3 段 base64url，payload 段有 sub (user_id)。
- * 注意：只 decode 拿 user_id，**不做签名校验**。
- * 安全性由以下保证：
- *   1. 调用方必须在服务端环境（cookie 由 Next server 自己读）
- *   2. 所有数据操作统一走 admin client + 显式 user_id 过滤
- *   3. 签名校验不是这个函数的职责（那需要 jwks 拉公钥，又要 RPC）
- */
-function decodeSupabaseToken(token: string): DecodedJwt | null {
-  try {
-    const parts = token.split('.')
-    if (parts.length !== 3) return null
-    const payload = JSON.parse(base64urlDecode(parts[1])) as DecodedJwt
-    if (!payload.sub) return null
-    return payload
-  } catch {
-    return null
-  }
-}
-
-/**
- * 获取当前会话用户 —— **无 RPC 版本**。
- * 直接从 cookie 里的 sb-access-token 本地 decode 拿 user id，
- * 避免每次都 RPC 到 Supabase Auth server 校验（那通常要 300ms+）。
+ * 获取当前会话用户 —— **零 RPC 版本**。
+ * 使用 supabase-js 的 getSession()：自动从 cookie 读 access token，本地 JWT decode，
+ * 不调 Auth server（不像 getUser() 每次要 RPC 验签，那通常要 300ms+）。
  *
- * @returns 模拟的 { id: string } 对象，保持与原 getUser 返回兼容。
+ * 安全性：
+ *   1. Cookie 由 Next server 自己读（客户端无法伪造服务端 cookie）
+ *   2. 所有数据操作统一走 admin client + 显式 user_id 过滤
+ *
+ * 注意：如果 access token 过期但 refresh token 还有效，middleware（对页面路由）会自动刷新，
+ *       但 API 路由不经过 middleware —— 这种场景极少（token 1 小时过期）。
  */
 export async function requireUser() {
-  try {
-    const cookieStore = cookies()
-    // Supabase 默认 cookie 名，也可能被重命名为 sb-access-token
-    let token = cookieStore.get('sb-access-token')?.value
-    if (!token) {
-      // 兜底：尝试另一个常见命名（supabase-js v2 server-side 的 cookie 名）
-      token = cookieStore.get('sb_access_token')?.value
-    }
-    if (!token) return null
-
-    const payload = decodeSupabaseToken(token)
-    if (!payload || !payload.sub) return null
-
-    return {
-      id: payload.sub,
-      email: payload.email,
-      role: payload.role,
-    } as { id: string; email?: string; role?: string }
-  } catch {
-    return null
-  }
+  const supabase = createClient()
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  return session?.user ?? null
 }
 
 /** 未登录的统一 401 响应 */
