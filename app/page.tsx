@@ -23,7 +23,7 @@ import {
   ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target,
 } from "lucide-react"
-import { noteApi, tagApi, categoryApi, trashApi } from "@/lib/api"
+import { noteApi, tagApi, categoryApi, trashApi, bootstrap } from "@/lib/api"
 import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
 import { collectDescendantIds } from "@/lib/category"
 import { getGuestData } from "@/lib/guest-data"
@@ -271,11 +271,8 @@ export default function HomePage() {
         setNotes(gd.notes); setTags(gd.tags); setCategories(gd.categories)
         return
       }
-      const [ns, ts, cs] = await Promise.all([
-        noteApi.list(),
-        tagApi.list(),
-        categoryApi.list(),
-      ])
+      // 合并为单次 bootstrap 请求：1 次 HTTP + 1 次 requireUser RPC，替代原先的 3 次
+      const { notes: ns, tags: ts, categories: cs } = await bootstrap()
       setNotes(ns); setTags(ts); setCategories(cs)
     } catch (e) { console.error(e) }
     finally {

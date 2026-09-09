@@ -167,3 +167,15 @@ export async function uploadImage(file: File): Promise<string> {
   const data = await res.json()
   return data.url as string
 }
+
+/**
+ * 首页启动的一次性数据拉取：合并 notes / tags / categories，
+ * 减少 HTTP round-trip 和 auth RPC 次数（3 → 1）。
+ */
+export async function bootstrap(): Promise<{
+  notes: NoteListItem[]
+  tags: Tag[]
+  categories: Category[]
+}> {
+  return call('/bootstrap')
+}
