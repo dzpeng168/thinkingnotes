@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { TagBadge } from "@/components/ui/tag-badge"
-import { NoteCardSkeleton } from "@/components/ui/loading"
+import { NoteCardSkeleton, TopProgressBar, Spinner } from "@/components/ui/loading"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { NewNoteDialog } from "@/components/new-note-dialog"
 import { CategoryTree } from "@/components/category-tree"
@@ -685,14 +685,24 @@ export default function HomePage() {
           </div>
 
           {loading ? (
-            // 加载中：显示骨架卡片
+            // 加载中：顶部进度条 + 骨架卡片（错峰淡入） + 底部 spinner + 提示文字
             <>
+              <TopProgressBar />
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 auto-rows-fr">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <NoteCardSkeleton key={`skeleton-${listLoadedAt}-${i}`} />
+                  <div
+                    key={`skeleton-${listLoadedAt}-${i}`}
+                    className="animate-fade-in-up"
+                    style={{ animationDelay: `${i * 60}ms` }}
+                  >
+                    <NoteCardSkeleton />
+                  </div>
                 ))}
               </div>
-              <div aria-hidden className="mt-6 pt-4 border-t border-transparent h-[40px]" />
+              <div className="flex items-center justify-center gap-2 py-6 text-sm text-warm-500 animate-fade-in-up" style={{ animationDelay: "480ms" }}>
+                <Spinner size="sm" />
+                <span>{t("note.loadingHint")}</span>
+              </div>
             </>
           ) : filteredNotes.length === 0 ? (
             <div

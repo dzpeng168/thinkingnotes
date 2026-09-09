@@ -85,6 +85,7 @@
     "tooltipRename": "重命名",
     "tooltipDelete": "删除",
     "moveCategoryFailed": "移动分类失败：",
+    "loadingHint": "正在加载笔记…",
     "fallbackLabel": "笔记"
   },
   "sidebar": {

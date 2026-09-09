@@ -85,6 +85,7 @@
     "tooltipRename": "Rename",
     "tooltipDelete": "Delete",
     "moveCategoryFailed": "Failed to move category: ",
+    "loadingHint": "Loading notes…",
     "fallbackLabel": "Notes"
   },
   "sidebar": {
