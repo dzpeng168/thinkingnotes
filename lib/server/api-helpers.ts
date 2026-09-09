@@ -25,10 +25,20 @@ export function jsonError(message: string, status = 400) {
  */
 export async function requireUser() {
   const supabase = createClient()
+
+  // 1) 快路径：本地 decode cookie 里的 access token（零 RPC）
   const {
     data: { session },
   } = await supabase.auth.getSession()
-  return session?.user ?? null
+  if (session?.user) return session.user
+
+  // 2) 兜底：cookie 里的 token 过期/损坏时，走 Auth server 验签并自动刷新。
+  //    getUser() 内部会用 refresh_token 换新 session，并通过 setAll 把新 cookie 写回响应，
+  //    避免"token 刚好过期 + API 路由不过 middleware"导致整个列表 401 查不到数据。
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  return user ?? null
 }
 
 /** 未登录的统一 401 响应 */
@@ -46,7 +56,11 @@ export async function getNoteTagsMap(
     .from('note_tags')
     .select('note_id, tags(id, name, color, created_at, user_id)')
     .in('note_id', noteIds)
-  if (error) return map
+  // 标签关联拉取失败只影响标签展示，不影响笔记本身，降级为空
+  if (error) {
+    console.warn('[getNoteTagsMap] failed, degrade to empty:', error.message)
+    return map
+  }
   for (const row of data ?? []) {
     const joined = row.tags as unknown
     const tag = (Array.isArray(joined) ? joined[0] : joined) as

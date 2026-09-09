@@ -1,14 +1,52 @@
 import type { Note, NoteListItem, Tag, Category } from './types'
+import { createClient } from './supabase/client'
 
 /**
  * 数据访问层（Web 版）：Tauri invoke → fetch。
  * 接口签名与返回类型与桌面版完全一致，所有 UI 组件零改动。
  * 后端为 Next.js Route Handlers（app/api/**），服务端按会话 user_id 过滤。
+ *
+ * 稳定性约定：
+ * - 5xx / 网络错误：退避后重试一次
+ * - 401：先尝试在浏览器端恢复会话（refresh_token 续期），成功则重放一次请求
  */
 
-async function call<T>(path: string, init?: RequestInit): Promise<T> {
+/** 带状态码的错误，便于上层区分「未登录 401」与「服务端 500」 */
+export class ApiError extends Error {
+  status: number
+  constructor(status: number, message: string) {
+    super(message)
+    this.name = 'ApiError'
+    this.status = status
+  }
+}
+
+/**
+ * 确保浏览器端会话就绪：getSession 为空时用 refresh_token 主动续期。
+ * 续期成功后 @supabase/ssr 会把新 cookie 写回 document.cookie，随后的请求即可带上。
+ */
+async function ensureSession(): Promise<boolean> {
   try {
-    const res = await fetch(`/api${path}`, {
+    const supabase = createClient()
+    const { data } = await supabase.auth.getSession()
+    if (data.session) return true
+    const refreshed = await supabase.auth.refreshSession()
+    return !!refreshed.data.session
+  } catch {
+    return false
+  }
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+async function call<T>(
+  path: string,
+  init?: RequestInit,
+  retry = true,
+): Promise<T> {
+  let res: Response
+  try {
+    res = await fetch(`/api${path}`, {
       // 禁用 Next.js Data Cache 和浏览器 HTTP 缓存，保证每次返回最新数据
       cache: 'no-store',
       headers: {
@@ -18,15 +56,29 @@ async function call<T>(path: string, init?: RequestInit): Promise<T> {
       },
       ...init,
     })
-    if (!res.ok) {
-      const body = await res.json().catch(() => null)
-      throw new Error(body?.error ?? res.statusText)
-    }
-    return res.json() as Promise<T>
   } catch (err) {
-    console.error(`[API ${path}] error:`, err)
+    // 网络抖动 / 连接被中断：退避后重试一次
+    if (retry) {
+      await sleep(300)
+      return call<T>(path, init, false)
+    }
+    console.error(`[API ${path}] network error:`, err)
     throw err
   }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null)
+    // 401 多数是 access token 临界过期（API 路由不过 middleware，不会自动刷新）。
+    // 先恢复会话再重放一次，避免偶发的「查不到数据」。
+    if (res.status === 401 && retry && (await ensureSession())) {
+      return call<T>(path, init, false)
+    }
+    const message = body?.error ?? res.statusText
+    console.error(`[API ${path}] ${res.status}:`, message)
+    throw new ApiError(res.status, message)
+  }
+
+  return res.json() as Promise<T>
 }
 
 export const noteApi = {

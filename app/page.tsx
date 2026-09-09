@@ -20,10 +20,10 @@ import { useHotkey } from "@/components/hotkeys-context"
 import {
   Search, Plus, Trash2, Edit3, PencilLine, LayoutGrid, ClipboardList, HardHat,
   BookOpen, Check, Tag as TagIcon, FolderInput, Calendar, CalendarDays, CalendarClock,
-  ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn,
+  ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn, AlertCircle,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target,
 } from "lucide-react"
-import { noteApi, tagApi, categoryApi, trashApi, bootstrap } from "@/lib/api"
+import { noteApi, tagApi, categoryApi, trashApi, bootstrap, ApiError } from "@/lib/api"
 import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
 import { collectDescendantIds } from "@/lib/category"
 import { getGuestData } from "@/lib/guest-data"
@@ -261,24 +261,61 @@ export default function HomePage() {
   // 每页展示 4 列 × 2 行 = 8 条
   const PAGE_SIZE = 8
 
+  // 并发保护：只应用最后一次请求的结果，避免慢请求覆盖新请求造成列表闪空
+  const refreshSeqRef = useRef(0)
+  // 列表加载失败信息（仅当确实没有数据时才展示错误态，而不是装作"没有笔记"）
+  const [loadError, setLoadError] = useState<string | null>(null)
+  // 避免在切换语言时重建 refresh 导致额外刷新
+  const localeRef = useRef(locale)
+  useEffect(() => { localeRef.current = locale }, [locale])
+
   const refresh = useCallback(async (silent = false) => {
+    const seq = ++refreshSeqRef.current
     // 非静默刷新（例如首次加载、从详情页返回、切换 tab）时展示骨架屏
     if (!silent) setLoading(true)
     try {
       // 游客模式：使用本地示例数据，不请求后端
       if (isGuest) {
-        const gd = getGuestData(locale)
+        const gd = getGuestData(localeRef.current)
+        if (seq !== refreshSeqRef.current) return
         setNotes(gd.notes); setTags(gd.tags); setCategories(gd.categories)
+        setLoadError(null)
         return
       }
       // 合并为单次 bootstrap 请求：1 次 HTTP + 1 次 requireUser RPC，替代原先的 3 次
-      const { notes: ns, tags: ts, categories: cs } = await bootstrap()
-      setNotes(ns); setTags(ts); setCategories(cs)
+      // 请求层已对 401 做"续期后重放"，这里再补最多 2 次退避重试，抵御偶发网络抖动
+      let data: Awaited<ReturnType<typeof bootstrap>> | null = null
+      let lastErr: unknown = null
+      for (let attempt = 0; attempt < 3; attempt++) {
+        try {
+          data = await bootstrap()
+          lastErr = null
+          break
+        } catch (e) {
+          lastErr = e
+          if (e instanceof ApiError && e.status === 401) break // 会话确实失效，别再重试
+          if (attempt < 2) await new Promise((r) => setTimeout(r, 400 * (attempt + 1)))
+        }
+      }
+      if (seq !== refreshSeqRef.current) return
+      if (!data) {
+        if (lastErr instanceof ApiError && lastErr.status === 401) {
+          // 会话真的没了：回登录页，而不是让用户对着空列表发呆
+          window.location.href = "/login"
+          return
+        }
+        setLoadError(lastErr instanceof Error ? lastErr.message : String(lastErr))
+        return
+      }
+      setNotes(data.notes); setTags(data.tags); setCategories(data.categories)
+      setLoadError(null)
     } catch (e) { console.error(e) }
     finally {
-      setLoading(false)
-      // 记录数据就绪的时间戳 → 触发卡片入场动画重新播放
-      setListLoadedAt(Date.now())
+      if (seq === refreshSeqRef.current) {
+        setLoading(false)
+        // 记录数据就绪的时间戳 → 触发卡片入场动画重新播放
+        setListLoadedAt(Date.now())
+      }
     }
   }, [isGuest])
 
@@ -705,6 +742,26 @@ export default function HomePage() {
                 <span>{t("note.loadingHint")}</span>
               </div>
             </>
+          ) : loadError && notes.length === 0 ? (
+            // 加载失败：明确告诉用户出错并可重试，而不是显示"还没有笔记"
+            <div
+              className="flex flex-col items-center justify-center py-20 text-center animate-fade-in-up"
+              style={{ animationDelay: "0ms" }}
+            >
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-red-100 to-red-200 flex items-center justify-center mb-6 shadow-warm">
+                <AlertCircle className="w-12 h-12 text-red-500" />
+              </div>
+              <h2 className="text-xl font-semibold text-warm-800 mb-2">
+                {t("note.loadFailed")}
+              </h2>
+              <p className="text-warm-500 max-w-md mb-6 leading-relaxed break-all">
+                {t("note.loadFailedHint")}
+                <span className="block text-xs text-warm-400 mt-1">{loadError}</span>
+              </p>
+              <Button size="lg" onClick={() => void refresh()}>
+                <RotateCcw className="w-5 h-5" /> {t("note.retry")}
+              </Button>
+            </div>
           ) : filteredNotes.length === 0 ? (
             <div
               className="flex flex-col items-center justify-center py-20 text-center animate-fade-in-up"

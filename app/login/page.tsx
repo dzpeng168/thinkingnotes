@@ -64,6 +64,16 @@ export default function LoginPage() {
     router.refresh()
   }
 
+  /**
+   * 登录/注册成功后整页跳转首页。
+   * 不用 router.push：客户端路由会复用旧的 RSC 缓存与组件状态，
+   * 偶发出现「已登录但首屏查不到笔记」；整页跳转可确保带着最新会话 cookie 经过 middleware。
+   */
+  const goHome = () => {
+    document.cookie = "tn_guest=; path=/; max-age=0"
+    window.location.assign("/")
+  }
+
   const submit = async (e: FormEvent) => {
     e.preventDefault()
     if (busy) return
@@ -82,17 +92,13 @@ export default function LoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
         // 正式登录后清除游客标记
-        document.cookie = "tn_guest=; path=/; max-age=0"
-        router.push("/")
-        router.refresh()
+        goHome()
       } else {
         const { data, error } = await supabase.auth.signUp({ email, password })
         if (error) throw error
         if (data.session) {
           // 未开启邮箱确认：注册即登录，直接进入首页
-          document.cookie = "tn_guest=; path=/; max-age=0"
-          router.push("/")
-          router.refresh()
+          goHome()
         } else {
           // 开启了邮箱确认：提示查收邮件
           setError(t("auth.checkEmail"))

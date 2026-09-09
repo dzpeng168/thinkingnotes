@@ -86,6 +86,9 @@
     "tooltipDelete": "Delete",
     "moveCategoryFailed": "Failed to move category: ",
     "loadingHint": "Loading notes…",
+    "loadFailed": "Failed to load notes",
+    "loadFailedHint": "We couldn't fetch your notes. This may be a network hiccup or an expired session.",
+    "retry": "Retry",
     "fallbackLabel": "Notes"
   },
   "sidebar": {

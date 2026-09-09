@@ -57,9 +57,18 @@ export async function GET() {
   ])
   const t3 = performance.now()
 
-  if (notesRes.error) return jsonError(notesRes.error.message, 500)
-  if (tagsRes.error) return jsonError(tagsRes.error.message, 500)
-  if (catsRes.error) return jsonError(catsRes.error.message, 500)
+  // 只有笔记查询失败才算整体失败；标签/分类失败降级为空数组，
+  // 避免一次抖动就让用户看到"查不到笔记"的空列表
+  if (notesRes.error) {
+    console.error('[bootstrap] notes query failed:', notesRes.error.message)
+    return jsonError(notesRes.error.message, 500)
+  }
+  if (tagsRes.error) {
+    console.warn('[bootstrap] tags query failed, degrade to empty:', tagsRes.error.message)
+  }
+  if (catsRes.error) {
+    console.warn('[bootstrap] categories query failed, degrade to empty:', catsRes.error.message)
+  }
 
   const notesRaw = (notesRes.data ?? []) as Omit<NoteListItem, 'tags'>[]
 

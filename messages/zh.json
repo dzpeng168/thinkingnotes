@@ -86,6 +86,9 @@
     "tooltipDelete": "删除",
     "moveCategoryFailed": "移动分类失败：",
     "loadingHint": "正在加载笔记…",
+    "loadFailed": "笔记加载失败",
+    "loadFailedHint": "没能取到你的笔记数据，可能是网络波动或登录状态已失效。",
+    "retry": "重试",
     "fallbackLabel": "笔记"
   },
   "sidebar": {
