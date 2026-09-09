@@ -84,17 +84,17 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-warm-100/70 via-warm-50 to-warm-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-b from-warm-100/70 via-warm-50 to-warm-50 flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8 justify-center">
+        <div className="flex items-center gap-2.5 mb-6 sm:mb-8 justify-center">
           <div className="w-9 h-9 rounded-lg bg-warm-600 text-white flex items-center justify-center">
             <NotebookPen className="w-4 h-4" />
           </div>
           <span className="font-bold text-warm-900 text-lg">{t("app.name")}</span>
         </div>
 
-        <div className="rounded-2xl border border-warm-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-warm-200 bg-white p-5 sm:p-8 shadow-sm">
           {invalid ? (
             <div className="text-center space-y-4">
               <AlertCircle className="w-10 h-10 text-red-500 mx-auto" />

@@ -562,27 +562,28 @@ export default function HomePage() {
             <div>
               <h1 className={`font-bold text-warm-900 tracking-tight ${isMobile ? "text-lg" : "text-2xl"}`}>{t("app.name")}</h1>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-              <div className={`relative ${isMobile ? "w-full sm:w-80" : "w-80"}`}>
+            <div className="flex w-full sm:w-auto items-center justify-end gap-2 sm:gap-3 flex-wrap min-w-0">
+              <div className={`relative min-w-0 ${isMobile ? "w-full sm:w-80" : "w-80"}`}>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-warm-400" />
                 <Input
                   ref={searchInputRef}
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                   placeholder={t("note.searchPlaceholder")}
-                  className="pl-9 h-10 bg-warm-50"
+                  className="pl-9 h-10 bg-warm-50 w-full"
                 />
               </div>
               <ThemeToggle />
               {isGuest ? (
-                <>
+                /* 徽章 + 登录按钮成组，避免小屏换行后被拆到两行造成错位 */
+                <div className="flex items-center gap-2 shrink-0">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 whitespace-nowrap">
                     <Eye className="w-3.5 h-3.5" /> {t("guest.badge")}
                   </span>
-                  <Button variant="outline" size="lg" onClick={exitGuest}>
+                  <Button variant="outline" size="lg" onClick={exitGuest} className="shrink-0">
                     <LogIn className="w-4 h-4" /> {t("guest.signIn")}
                   </Button>
-                </>
+                </div>
               ) : (
                 <>
                   {/* 移动端隐藏"新建笔记"按钮（改为只读浏览） */}
@@ -600,7 +601,7 @@ export default function HomePage() {
         {/* 游客模式提示条 */}
         {isGuest && (
           <div className="border-b border-amber-200 bg-amber-50">
-            <div className="max-w-7xl mx-auto px-6 py-1.5 text-xs text-amber-700 flex items-center justify-center gap-1.5 text-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 py-1.5 text-xs text-amber-700 flex items-center justify-center gap-1.5 text-center">
               <Eye className="w-3.5 h-3.5 shrink-0" />
               {t("guest.hint")}
             </div>

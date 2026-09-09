@@ -11,7 +11,7 @@ import { useT } from "@/lib/i18n"
 import { resolveTemplateMeta } from "@/lib/utils"
 import type { TemplateType } from "@/lib/types"
 import {
-  NotebookPen, AlertCircle, Eye, FileText,
+  NotebookPen, AlertCircle, Eye, FileText, Globe,
   LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
 } from "lucide-react"
@@ -110,49 +110,81 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-b from-warm-100/70 via-warm-50 to-warm-50 flex flex-col">
       {/* 顶栏 */}
       <header className="sticky top-0 z-10 border-b border-warm-200/80 bg-warm-50/80 backdrop-blur">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-warm-600 text-white flex items-center justify-center">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-8 h-8 shrink-0 rounded-lg bg-warm-600 text-white flex items-center justify-center">
               <NotebookPen className="w-4 h-4" />
             </div>
-            <span className="font-bold text-warm-900">{t("app.name")}</span>
+            <span className="font-bold text-warm-900 truncate">{t("app.name")}</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            {/* 语言切换：移动端只留图标，避免挤占按钮空间 */}
             <button
               type="button"
               onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
-              className="h-9 px-3 rounded-md border border-warm-200 hover:border-warm-400 text-sm text-warm-600 hover:text-warm-800 transition-colors"
+              aria-label={locale === "zh" ? "English" : "简体中文"}
+              className="h-9 w-9 sm:w-auto sm:px-3 inline-flex items-center justify-center rounded-md border border-warm-200 hover:border-warm-400 text-sm text-warm-600 hover:text-warm-800 transition-colors"
             >
-              {locale === "zh" ? "English" : "简体中文"}
+              <Globe className="w-4 h-4 sm:hidden" />
+              <span className="hidden sm:inline">{locale === "zh" ? "English" : "简体中文"}</span>
             </button>
-            <Button variant="outline" onClick={enterGuest}>
+            <Button variant="outline" onClick={enterGuest} className="hidden md:inline-flex">
               <Eye className="w-4 h-4 mr-1.5" /> {t("auth.guestMode")}
             </Button>
-            <Button variant="ghost" onClick={() => openAuth("signin")}>{t("auth.signIn")}</Button>
-            <Button onClick={() => openAuth("signup")}>{t("landing.startFree")}</Button>
+            <Button
+              variant="ghost"
+              onClick={() => openAuth("signin")}
+              className="h-9 px-2.5 sm:h-10 sm:px-4"
+            >
+              {t("auth.signIn")}
+            </Button>
+            <Button
+              onClick={() => openAuth("signup")}
+              className="h-9 px-3 sm:h-10 sm:px-4"
+            >
+              {t("landing.startFree")}
+            </Button>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="relative max-w-6xl mx-auto px-6 pt-20 pb-8 text-center">
+      <section className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-20 pb-8 text-center">
         {/* 柔和背景光斑 */}
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
           <div className="absolute -top-20 left-[10%] w-72 h-72 rounded-full bg-rose-200/40 blur-3xl" />
           <div className="absolute -top-20 right-[10%] w-72 h-72 rounded-full bg-amber-200/40 blur-3xl" />
           <div className="absolute top-16 left-1/2 -translate-x-1/2 w-[640px] h-48 rounded-full bg-warm-200/50 blur-3xl" />
         </div>
-        <h1 className="relative text-4xl sm:text-5xl font-bold leading-tight max-w-3xl mx-auto bg-gradient-to-r from-warm-900 via-warm-700 to-warm-500 bg-clip-text text-transparent">
+        <h1 className="relative text-3xl sm:text-4xl lg:text-5xl font-bold leading-tight max-w-3xl mx-auto bg-gradient-to-r from-warm-900 via-warm-700 to-warm-500 bg-clip-text text-transparent">
           {t("app.tagline")}
         </h1>
-        <p className="mt-5 text-base sm:text-lg text-warm-600 max-w-2xl mx-auto leading-relaxed">
+        <p className="relative mt-4 sm:mt-5 text-base sm:text-lg text-warm-600 max-w-2xl mx-auto leading-relaxed">
           {t("landing.heroSubtitle")}
         </p>
+
+        {/* CTA：移动端整行大按钮，桌面端横排 */}
+        <div className="relative mt-7 sm:mt-9 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3">
+          <Button size="lg" onClick={() => openAuth("signup")} className="w-full sm:w-auto">
+            {t("landing.startFree")}
+          </Button>
+          <Button size="lg" variant="outline" onClick={() => openAuth("signin")} className="w-full sm:w-auto">
+            {t("auth.signIn")}
+          </Button>
+          <Button
+            size="lg"
+            variant="ghost"
+            onClick={enterGuest}
+            className="w-full sm:w-auto md:hidden"
+          >
+            <Eye className="w-4 h-4 mr-1.5" /> {t("auth.guestMode")}
+          </Button>
+        </div>
       </section>
 
       {/* 模板矩阵 */}
-      <section className="max-w-6xl mx-auto px-6 pb-12 w-full">
-        <h2 className="text-2xl font-bold text-warm-900 text-center mb-2">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 pb-10 sm:pb-12 w-full">
+        <h2 className="text-xl sm:text-2xl font-bold text-warm-900 text-center mb-2">
           {t("landing.featuresTitle")}
         </h2>
         <p className="text-sm text-warm-600 text-center mb-8">

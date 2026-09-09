@@ -9,8 +9,8 @@ export function SiteFooter() {
 
   return (
     <footer className="border-t border-warm-200/80 bg-white">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
           {/* PRODUCT */}
           <div>
             <h4 className="text-xs font-semibold tracking-wider text-warm-400 uppercase mb-3">
@@ -55,9 +55,9 @@ export function SiteFooter() {
           <div className="hidden sm:block" />
         </div>
 
-        <div className="mt-10 pt-6 border-t border-warm-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-warm-400">
+        <div className="mt-8 sm:mt-10 pt-6 border-t border-warm-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-warm-400">
           <span>{t("siteFooter.copyright")}</span>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
             <FooterLink href="#" size="xs">{t("siteFooter.privacy")}</FooterLink>
             <FooterLink href="#" size="xs">{t("siteFooter.terms")}</FooterLink>
           </div>
