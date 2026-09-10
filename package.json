@@ -21,6 +21,7 @@
     "@milkdown/theme-nord": "^7.22.1",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.45.0",
+    "@vercel/analytics": "^2.0.1",
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-react": "^1.0.6",
     "clsx": "^2.1.1",

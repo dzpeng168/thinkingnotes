@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { cookies, headers } from 'next/headers'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import { AppProviders } from '@/components/app-providers'
 
@@ -74,6 +75,8 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-warm-50 antialiased">
         <AppProviders initialLocale={locale}>{children}</AppProviders>
+        {/* Vercel Analytics：生产环境自动上报，本地 dev 为空操作 */}
+        <Analytics />
       </body>
     </html>
   )
