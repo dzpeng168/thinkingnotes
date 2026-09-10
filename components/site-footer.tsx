@@ -61,22 +61,9 @@ export function SiteFooter() {
             {t("siteFooter.links")}
           </h4>
           <div className="flex flex-wrap items-center gap-4">
-            <a
-              href="https://xinquji.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="新趣集"
-              className="inline-flex shrink-0 opacity-90 hover:opacity-100 transition-opacity"
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="https://xinquji.com/badge"
-                alt="Featured on 新趣集"
-                style={{ width: "200px", height: "54px" }}
-                width={200}
-                height={54}
-              />
-            </a>
+              <a href="https://xinquji.com" target="_blank" rel="noopener noreferrer">
+                <img src="https://xinquji.com/badge" alt="Featured on 新趣集" width="200" height="54" />
+              </a>
           </div>
         </div>
 
