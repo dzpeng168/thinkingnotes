@@ -1,15 +1,22 @@
 import type { Metadata } from 'next'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import './globals.css'
 import { AppProviders } from '@/components/app-providers'
 
 const LOCALE_COOKIE_KEY = "thinkingnotes:locale"
 const LANG_ATTR: Record<"zh" | "en", string> = { zh: "zh-CN", en: "en-US" }
 
-function readLocaleFromCookie(): "zh" | "en" {
+/**
+ * 服务端语言判定：cookie > 浏览器 Accept-Language > 默认英文。
+ * 加上 Accept-Language 回退，避免首访的中文用户先闪一帧英文界面
+ * （客户端 detectInitialLocale 也用同一套优先级）。
+ */
+function readLocale(): "zh" | "en" {
   try {
     const c = cookies().get(LOCALE_COOKIE_KEY)?.value
     if (c === 'zh' || c === 'en') return c
+    const accept = headers().get('accept-language') ?? ''
+    if (/zh(-|_|$)/i.test(accept)) return 'zh'
   } catch {}
   return 'en'
 }
@@ -59,7 +66,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const locale = readLocaleFromCookie()
+  const locale = readLocale()
   return (
     <html lang={LANG_ATTR[locale]} suppressHydrationWarning>
       <head>
