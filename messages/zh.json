@@ -6,6 +6,7 @@
     "graphViewComingSoon": "图表视图功能即将上线，敬请期待！"
   },
   "common": {
+    "more": "更多",
     "save": "保存",
     "cancel": "取消",
     "confirm": "确定",
@@ -366,6 +367,14 @@
     "codeBlock": "代码块",
     "table": "表格",
     "undo": "撤销 (Ctrl+Z)",
-    "redo": "重做 (Ctrl+Y)"
+    "redo": "重做 (Ctrl+Y)",
+    "taskList": "待办项",
+    "simpleEdit": "编辑",
+    "simplePreview": "预览",
+    "simplePlaceholder": "在此书写 Markdown…",
+    "simpleEmpty": "暂无内容，点「编辑」开始书写",
+    "boldText": "粗体",
+    "italicText": "斜体",
+    "linkText": "链接文字"
   }
 }

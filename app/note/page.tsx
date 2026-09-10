@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { TagBadge } from "@/components/ui/tag-badge"
 import { TemplateRenderer } from "@/components/templates/template-renderer"
+import { SimpleMarkdownEditor } from "@/components/editor/simple-markdown-editor"
 import { noteApi, tagApi, categoryApi } from "@/lib/api"
 import { formatDate, cn, useTemplateMeta } from "@/lib/utils"
 import { useT } from "@/lib/i18n"
@@ -19,7 +20,7 @@ import {
   ArrowLeft, Save, Check, Edit3, PencilLine, Plus, Trash2,
   LayoutGrid, ClipboardList, Tag, BookOpen, CalendarDays, Calendar, CalendarClock,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
-  Download, FileText, Printer,
+  Download, FileText, Printer, MoreVertical, Tags,
 } from "lucide-react"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -54,10 +55,15 @@ function NoteEditContent() {
   const [tagDialog, setTagDialog] = useState(false)
   const [deleteDialog, setDeleteDialog] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  // 移动端：顶栏「更多」菜单（简化编辑模式下收纳次要操作）
+  const [mobileMenu, setMobileMenu] = useState(false)
   const saveTimer = useRef<any>(null)
   const loaded = useRef(false)
   const contentRef = useRef("")
   const titleRef = useRef("")
+  const noteRef = useRef<Note | null>(null)
+
+  useEffect(() => { noteRef.current = note }, [note])
 
   useEffect(() => { contentRef.current = content }, [content])
   useEffect(() => { titleRef.current = title }, [title])
@@ -86,6 +92,19 @@ function NoteEditContent() {
       }
     })()
   }, [noteId, router, t])
+
+  // 离开页面时补一次保存：防抖窗口（600ms）内的改动在移动端"直接返回列表"时很容易丢
+  useEffect(() => {
+    return () => {
+      const n = noteRef.current
+      if (!n || !loaded.current) return
+      clearTimeout(saveTimer.current)
+      const patch: { title?: string; content?: string } = {}
+      if (titleRef.current !== n.title) patch.title = titleRef.current
+      if (contentRef.current !== n.content) patch.content = contentRef.current
+      if (Object.keys(patch).length > 0) void noteApi.update(n.id, patch)
+    }
+  }, [])
 
   const triggerSave = (patch: { title?: string; content?: string }) => {
     if (!loaded.current || !note) return
@@ -327,26 +346,49 @@ function NoteEditContent() {
           <div className="h-6 w-px bg-warm-200 hidden sm:block" />
 
           <div className={`flex-1 min-w-[120px] max-w-2xl ${isMobile ? "min-w-0" : "min-w-[240px]"}`}>
-            {editingTitle && !isMobile ? (
+            {editingTitle ? (
               <Input
                 value={title}
                 onChange={(e) => onTitleChange(e.target.value)}
                 onBlur={() => setEditingTitle(false)}
+                onKeyDown={(e) => { if (e.key === "Enter") setEditingTitle(false) }}
                 autoFocus
-                className="h-10 text-xl font-bold bg-warm-100 border-warm-300"
+                className={`h-10 font-bold bg-warm-100 border-warm-300 ${isMobile ? "text-lg" : "text-xl"}`}
               />
             ) : (
               <div
-                onClick={() => !isMobile && setEditingTitle(true)}
-                className={`flex items-center gap-2 group ${isMobile ? "" : "cursor-text"} px-2 py-1 rounded-lg ${isMobile ? "" : "hover:bg-warm-100"}`}
+                onClick={() => setEditingTitle(true)}
+                className="flex items-center gap-2 group cursor-text px-2 py-1 rounded-lg hover:bg-warm-100"
               >
-                <h1 className={`text-xl font-bold text-warm-900 truncate ${isMobile ? "text-lg" : ""}`}>
+                <h1 className={`font-bold text-warm-900 truncate ${isMobile ? "text-lg" : "text-xl"}`}>
                   {title || <span className="text-warm-400 italic">{t("note.clickToInputTitle")}</span>}
                 </h1>
-                {!isMobile && <Edit3 className="w-4 h-4 text-warm-400 opacity-0 group-hover:opacity-100" />}
+                <Edit3 className={`w-4 h-4 text-warm-400 ${isMobile ? "" : "opacity-0 group-hover:opacity-100"}`} />
               </div>
             )}
           </div>
+
+          {/* 移动端：保存状态 + 更多菜单（导出/标签/删除收纳其中，桌面端在右侧横排） */}
+          {isMobile && (
+            <div className="flex items-center gap-1.5 shrink-0">
+              <div
+                className={cn(
+                  "px-2 h-8 rounded-lg flex items-center text-xs font-medium",
+                  saved ? "bg-green-50 text-green-700 border border-green-200" : "bg-warm-100 text-warm-700 border border-warm-300"
+                )}
+              >
+                {saving ? <Spinner size="sm" /> : saved ? <Check className="w-4 h-4" /> : <Save className="w-4 h-4" />}
+              </div>
+              <button
+                type="button"
+                aria-label={t("common.more")}
+                onClick={() => setMobileMenu(true)}
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-warm-600 hover:bg-warm-100 active:bg-warm-200 transition-colors"
+              >
+                <MoreVertical className="w-5 h-5" />
+              </button>
+            </div>
+          )}
 
           {!isMobile && (
           <div className="flex items-center gap-1 ml-auto">
@@ -431,20 +473,64 @@ function NoteEditContent() {
         </div>
       </header>
 
-      <main className="flex-1 min-h-0 p-5 overflow-hidden flex flex-col">
-        <div className="flex-1 min-h-0 max-w-[1600px] w-full mx-auto rounded-2xl bg-warm-50 border border-warm-200 shadow-warm p-5 overflow-hidden flex flex-col">
+      <main className="flex-1 min-h-0 p-2 sm:p-5 overflow-hidden flex flex-col">
+        <div className="flex-1 min-h-0 max-w-[1600px] w-full mx-auto rounded-2xl bg-warm-50 border border-warm-200 shadow-warm p-2 sm:p-5 overflow-hidden flex flex-col">
           {/* 打印时显示的标题 */}
           <div className="print-only">{title}</div>
-          <TemplateRenderer
-            template={ttype}
-            value={content}
-            onChange={onContentChange}
-            noteId={noteId}
-            initialMode={startInEditor ? "editor" : undefined}
-            readOnly={isMobile}
-          />
+          {isMobile ? (
+            /* 移动端：简化编辑模式（原生 textarea 直写 Markdown + 预览切换）
+               桌面端的 Milkdown 富文本在手机上选区/输入法体验差，这里刻意降级 */
+            <SimpleMarkdownEditor
+              value={content}
+              onChange={onContentChange}
+              initialMode={startInEditor ? "edit" : "preview"}
+            />
+          ) : (
+            <TemplateRenderer
+              template={ttype}
+              value={content}
+              onChange={onContentChange}
+              noteId={noteId}
+              initialMode={startInEditor ? "editor" : undefined}
+            />
+          )}
         </div>
       </main>
+
+      {/* 移动端「更多」菜单：导出 / 标签 / 删除 */}
+      <Dialog open={mobileMenu} onOpenChange={setMobileMenu}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t("common.more")}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1">
+            <button
+              onClick={() => { setMobileMenu(false); exportMarkdown() }}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left text-sm text-warm-800 hover:bg-warm-100 transition-colors"
+            >
+              <FileText className="w-4 h-4 text-warm-500" /> {t("note.exportMarkdown")}
+            </button>
+            <button
+              onClick={() => { setMobileMenu(false); setTagDialog(true) }}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left text-sm text-warm-800 hover:bg-warm-100 transition-colors"
+            >
+              <Tags className="w-4 h-4 text-warm-500" /> {t("note.manageTags")}
+            </button>
+            <button
+              onClick={() => { setMobileMenu(false); void forceSave() }}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left text-sm text-warm-800 hover:bg-warm-100 transition-colors"
+            >
+              <Save className="w-4 h-4 text-warm-500" /> {t("common.save")}
+            </button>
+            <button
+              onClick={() => { setMobileMenu(false); setDeleteDialog(true) }}
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-lg text-left text-sm text-red-600 hover:bg-red-50 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" /> {t("common.delete")}
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={tagDialog} onOpenChange={setTagDialog}>
         <DialogContent>

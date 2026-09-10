@@ -203,8 +203,8 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
             <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg p-2.5">{errMsg}</div>
           )}
 
-          {/* 标题 + 分类：同一行 */}
-          <div className="flex gap-3">
+          {/* 标题 + 分类：窄屏上下堆叠，宽屏同一行 */}
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 min-w-0">
               <div className="text-sm font-medium text-warm-800 mb-2">{t("template.noteTitleLabel")}</div>
               <Input
@@ -215,7 +215,7 @@ export function NewNoteDialog({ open, onOpenChange }: Props) {
                 autoFocus
               />
             </div>
-            <div className="w-56 shrink-0">
+            <div className="w-full sm:w-56 shrink-0">
               <div className="text-sm font-medium text-warm-800 mb-2">{t("template.categoryLabel")}</div>
               <select
                 value={categoryId ?? ""}

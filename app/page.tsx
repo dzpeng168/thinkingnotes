@@ -168,7 +168,7 @@ export default function HomePage() {
   const { t, locale, setLocale } = useT()
   const { signOut } = useAuth()
   const isMobile = useIsMobile()
-  // 移动端也视为只读：隐藏所有创建/编辑/删除入口
+  // 移动端：笔记编辑已开放（详情走简化编辑模式），仅目录树仍保持只读（不做分类增删改）
   const mobileReadOnly = isMobile
   const [notes, setNotes] = useState<NoteListItem[]>([])
   const [tags, setTags] = useState<TagModel[]>([])
@@ -354,17 +354,13 @@ export default function HomePage() {
   }, [isGuest, pathname, refresh])
 
   const openNew = useCallback(() => {
-    // 游客模式 / 移动端：只读，提示登录或回桌面端创建
+    // 游客模式：示例数据只读，提示登录
     if (isGuest) {
       alert(t("guest.previewOnly"))
       return
     }
-    if (mobileReadOnly) {
-      alert(t("mobile.readOnlyHint"))
-      return
-    }
     setShowNew(true)
-  }, [isGuest, mobileReadOnly, t])
+  }, [isGuest, t])
   const openSettings = useCallback(() => setShowSettings(true), [])
   const focusSearch = useCallback(() => {
     searchInputRef.current?.focus()
@@ -651,12 +647,10 @@ export default function HomePage() {
                 </div>
               ) : (
                 <>
-                  {/* 移动端隐藏"新建笔记"按钮（改为只读浏览） */}
-                  {!mobileReadOnly && (
-                  <Button onClick={() => setShowNew(true)} size="lg" className={isMobile ? "hidden" : ""}>
+                  {/* 桌面端顶栏"新建笔记"；移动端改用右下角悬浮按钮 */}
+                  <Button onClick={() => setShowNew(true)} size="lg" className="hidden md:inline-flex">
                     <Plus className="w-5 h-5" /> {t("note.new")}
                   </Button>
-                  )}
                   {/* 移动端：退出登录（桌面端在设置弹窗里） */}
                   <Button
                     variant="outline"
@@ -816,7 +810,7 @@ export default function HomePage() {
                   ? t("note.noNotesHintFiltered")
                   : t("note.noNotesHintEmpty")}
               </p>
-              {!isGuest && !mobileReadOnly && (
+              {!isGuest && (
                 <Button size="lg" onClick={() => setShowNew(true)}>
                   <Plus className="w-5 h-5" /> {t("note.createFirst")}
                 </Button>
@@ -844,32 +838,32 @@ export default function HomePage() {
                         : router.push(`/note?id=${note.id}`)
                     }
                   >
-                    {/* hover 操作按钮 — 游客/只读模式/移动端均隐藏 */}
-                    {!isGuest && !mobileReadOnly && (
-                    <div className="absolute top-2 right-2 flex gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    {/* 操作按钮 — 游客隐藏；移动端无 hover，改为常驻显示并精简为「重命名 + 删除」 */}
+                    {!isGuest && (
+                    <div className="absolute top-2 right-2 flex gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10">
                       <button
-                        className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+                        className="hidden md:flex w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 items-center justify-center"
                         title={t("note.tooltipMoveCategory")}
                         onClick={(e) => { e.stopPropagation(); setMoveDialog(note.id) }}
                       >
                         <FolderInput className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+                        className="hidden md:flex w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 items-center justify-center"
                         title={t("note.tooltipTags")}
                         onClick={(e) => { e.stopPropagation(); setTagDialog(note.id) }}
                       >
                         <TagIcon className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        className="w-7 h-7 rounded-md hover:bg-warm-100 text-warm-500 flex items-center justify-center"
+                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white/90 md:bg-transparent hover:bg-warm-100 text-warm-500 flex items-center justify-center"
                         title={t("note.tooltipRename")}
                         onClick={(e) => { e.stopPropagation(); setRenameId(note.id); setRenameVal(note.title) }}
                       >
                         <PencilLine className="w-3.5 h-3.5" />
                       </button>
                       <button
-                        className="w-7 h-7 rounded-md hover:bg-red-50 text-red-500 flex items-center justify-center"
+                        className="w-8 h-8 md:w-7 md:h-7 rounded-md bg-white/90 md:bg-transparent hover:bg-red-50 text-red-500 flex items-center justify-center"
                         title={t("note.tooltipDelete")}
                         onClick={(e) => { e.stopPropagation(); setDeleteId(note.id) }}
                       >
@@ -990,6 +984,19 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+
+        {/* 移动端悬浮"新建笔记"按钮：桌面端顶栏已有入口，这里 md 以上隐藏 */}
+        {!isGuest && (
+          <button
+            type="button"
+            onClick={() => setShowNew(true)}
+            aria-label={t("note.new")}
+            className="md:hidden fixed right-4 z-40 w-14 h-14 rounded-full bg-warm-600 text-white shadow-warm-lg flex items-center justify-center active:bg-warm-700 transition-colors"
+            style={{ bottom: "calc(1rem + env(safe-area-inset-bottom))" }}
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+        )}
 
         <NewNoteDialog open={showNew} onOpenChange={setShowNew} />
 

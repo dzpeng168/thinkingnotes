@@ -6,6 +6,7 @@
     "graphViewComingSoon": "Graph view is coming soon!"
   },
   "common": {
+    "more": "More",
     "save": "Save",
     "cancel": "Cancel",
     "confirm": "OK",
@@ -366,6 +367,14 @@
     "codeBlock": "Code block",
     "table": "Table",
     "undo": "Undo (Ctrl+Z)",
-    "redo": "Redo (Ctrl+Y)"
+    "redo": "Redo (Ctrl+Y)",
+    "taskList": "Task item",
+    "simpleEdit": "Edit",
+    "simplePreview": "Preview",
+    "simplePlaceholder": "Write Markdown here…",
+    "simpleEmpty": "No content yet — tap Edit to start",
+    "boldText": "bold",
+    "italicText": "italic",
+    "linkText": "link text"
   }
 }
