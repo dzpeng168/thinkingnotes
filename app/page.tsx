@@ -21,6 +21,7 @@ import {
   Search, Plus, Trash2, Edit3, PencilLine, LayoutGrid, ClipboardList, HardHat,
   BookOpen, Check, Tag as TagIcon, FolderInput, Calendar, CalendarDays, CalendarClock,
   ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn, AlertCircle,
+  Globe, LogOut,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target,
 } from "lucide-react"
 import { noteApi, tagApi, categoryApi, trashApi, bootstrap, ApiError } from "@/lib/api"
@@ -29,6 +30,7 @@ import { collectDescendantIds } from "@/lib/category"
 import { getGuestData } from "@/lib/guest-data"
 import { useT } from "@/lib/i18n"
 import { useIsMobile } from "@/lib/use-mobile"
+import { useAuth } from "@/components/auth-context"
 import type { NoteListItem, Tag as TagModel, Category, TemplateType } from "@/lib/types"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
@@ -163,7 +165,8 @@ function NoteCard({
 export default function HomePage() {
   const router = useRouter()
   const pathname = usePathname()
-  const { t, locale } = useT()
+  const { t, locale, setLocale } = useT()
+  const { signOut } = useAuth()
   const isMobile = useIsMobile()
   // 移动端也视为只读：隐藏所有创建/编辑/删除入口
   const mobileReadOnly = isMobile
@@ -209,6 +212,18 @@ export default function HomePage() {
   const exitGuest = () => {
     document.cookie = "tn_guest=; path=/; max-age=0"
     window.location.href = "/login"
+  }
+
+  // 退出登录（移动端顶栏按钮；桌面端在设置弹窗里）
+  const [signingOut, setSigningOut] = useState(false)
+  const handleSignOut = async () => {
+    if (signingOut) return
+    setSigningOut(true)
+    try {
+      await signOut()
+    } finally {
+      setSigningOut(false)
+    }
   }
 
   // 左侧目录宽度（可拖拽调整 + localStorage 持久化）
@@ -611,6 +626,19 @@ export default function HomePage() {
                 />
               </div>
               <ThemeToggle />
+
+              {/* 移动端：语言切换（桌面端在设置弹窗里） */}
+              <button
+                type="button"
+                onClick={() => setLocale(locale === "zh" ? "en" : "zh")}
+                title={t("settings.languageTitle")}
+                aria-label={t("settings.languageTitle")}
+                className="md:hidden h-9 px-2.5 inline-flex items-center gap-1 rounded-md border border-warm-200 bg-white hover:bg-warm-100 hover:border-warm-400 text-sm text-warm-600 transition-colors"
+              >
+                <Globe className="w-4 h-4" />
+                <span className="font-medium">{locale === "zh" ? "中" : "EN"}</span>
+              </button>
+
               {isGuest ? (
                 /* 徽章 + 登录按钮成组，避免小屏换行后被拆到两行造成错位 */
                 <div className="flex items-center gap-2 shrink-0">
@@ -629,6 +657,16 @@ export default function HomePage() {
                     <Plus className="w-5 h-5" /> {t("note.new")}
                   </Button>
                   )}
+                  {/* 移动端：退出登录（桌面端在设置弹窗里） */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void handleSignOut()}
+                    disabled={signingOut}
+                    className="md:hidden h-9 px-2.5 text-red-500 hover:text-red-600 hover:bg-red-50 border-red-200"
+                  >
+                    <LogOut className="w-4 h-4" /> {t("settings.signOut")}
+                  </Button>
                 </>
               )}
             </div>
