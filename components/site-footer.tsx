@@ -54,19 +54,6 @@ export function SiteFooter() {
           <div className="hidden sm:block" />
           <div className="hidden sm:block" />
         </div>
-
-        {/* 友情链接 */}
-        <div className="mt-8 sm:mt-10 pt-6 border-t border-warm-100">
-          <h4 className="text-xs font-semibold tracking-wider text-warm-400 uppercase mb-3">
-            {t("siteFooter.links")}
-          </h4>
-          <div className="flex flex-wrap items-center gap-4">
-              <a href="https://xinquji.com" target="_blank" rel="noopener noreferrer">
-                <img src="https://xinquji.com/badge" alt="Featured on 新趣集" width="200" height="54" />
-              </a>
-          </div>
-        </div>
-
         <div className="mt-6 sm:mt-8 pt-6 border-t border-warm-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-warm-400">
           <span>{t("siteFooter.copyright")}</span>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
