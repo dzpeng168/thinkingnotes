@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import { readFile } from 'fs/promises'
 import path from 'path'
 import { cookies, headers } from 'next/headers'
@@ -6,6 +7,33 @@ import { DocsView } from './docs-view'
 export const dynamic = 'force-dynamic'
 
 const LOCALE_COOKIE_KEY = 'thinkingnotes:locale'
+
+/** docs/features — 公开营销页，值得被索引，SSR 输出本地化 metadata */
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await detectLocale()
+  if (locale === 'zh') {
+    return {
+      title: '功能介绍 · ThinkingNotes 思维笔记',
+      description:
+        'ThinkingNotes 的全部功能：15 种思维模型模板、云端多端同步、原生 Markdown 编辑器、自动保存、标签与分类管理。',
+      keywords: [
+        'ThinkingNotes 功能', '思维笔记功能', '模板笔记本',
+        'Markdown 编辑器', '云端笔记同步',
+      ],
+      alternates: { canonical: '/docs/features' },
+    }
+  }
+  return {
+    title: 'Features · ThinkingNotes',
+    description:
+      'All ThinkingNotes features: 15 thinking-model templates, cloud sync across devices, native Markdown editor, auto-save, tags & categories.',
+    keywords: [
+      'ThinkingNotes features', 'markdown notes', 'thinking model templates',
+      'cloud note sync', 'cornell notes', '5w2h',
+    ],
+    alternates: { canonical: '/docs/features' },
+  }
+}
 
 async function readDoc(file: string): Promise<string | null> {
   try {

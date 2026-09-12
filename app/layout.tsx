@@ -1,4 +1,4 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { cookies, headers } from 'next/headers'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
@@ -22,12 +22,94 @@ function readLocale(): "zh" | "en" {
   return 'en'
 }
 
-export const metadata: Metadata = {
-  title: 'ThinkingNotes',
-  description: 'Make thinking more efficient and organized',
+/** 站点根域名，从环境变量读取，dev 回退 localhost */
+function siteBase(): URL {
+  const raw = process.env.SITE_URL || process.env.VERCEL_PROJECT_PRODUCTION_URL
+  if (raw) {
+    try { return new URL(raw.startsWith('http') ? raw : `https://${raw}`) } catch {}
+  }
+  return new URL('http://localhost:3000')
+}
+
+const SITE_NAME = 'ThinkingNotes'
+
+const META_BY_LOCALE: Record<"zh" | "en", {
+  title: string
+  description: string
+  keywords: string[]
+  ogTitle: string
+  ogDesc: string
+}> = {
+  zh: {
+    title: 'ThinkingNotes — 思维笔记',
+    description: '帮你把想问题变得更有条理。康奈尔笔记、5W2H、六顶思考帽、WOOP 等 15 种思维模型模板，云端多端同步，原生 Markdown 体验。',
+    keywords: ['思维笔记', '模板笔记', '康奈尔笔记', '5W2H', '六顶思考帽', '思维模型', 'Markdown 笔记', 'Note-taking', 'ThinkingNotes'],
+    ogTitle: 'ThinkingNotes — 帮你把想问题变得更有条理',
+    ogDesc: '15 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验',
+  },
+  en: {
+    title: 'ThinkingNotes',
+    description: 'Make thinking more efficient and organized. 15 thinking-model templates including Cornell, 5W2H, Six Thinking Hats, WOOP — cloud-synced, native Markdown.',
+    keywords: ['thinking notes', 'note templates', 'cornell notes', '5w2h', 'six thinking hats', 'thinking model', 'markdown notes', 'cloud notes', 'ThinkingNotes'],
+    ogTitle: 'ThinkingNotes — Make thinking organized',
+    ogDesc: '15 thinking-model templates · Cloud sync · Native Markdown editor',
+  },
+}
+
+/** 根 metadata：SSR 按 cookie locale 输出对应语言的 title/description/keywords，
+ *  themeScript 不再覆盖 title/meta description（避免与 Metadata API 冲突）。 */
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = readLocale()
+  const meta = META_BY_LOCALE[locale]
+  const base = siteBase()
+
+  return {
+    metadataBase: base,
+    title: meta.title,
+    description: meta.description,
+    keywords: meta.keywords,
+    applicationName: SITE_NAME,
+    generator: 'Next.js',
+    authors: [{ name: 'ThinkingNotes Team' }],
+    creator: 'ThinkingNotes',
+    publisher: 'ThinkingNotes',
+    formatDetection: { email: false, address: false, telephone: false },
+    robots: { index: true, follow: true },
+    icons: {
+      icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+      apple: [{ url: '/favicon.svg', type: 'image/svg+xml' }],
+    },
+    openGraph: {
+      type: 'website',
+      siteName: SITE_NAME,
+      title: meta.ogTitle,
+      description: meta.ogDesc,
+      url: base,
+      locale: locale === 'zh' ? 'zh_CN' : 'en_US',
+    },
+    alternates: {
+      canonical: base,
+    },
+    twitter: {
+      card: 'summary',
+      title: meta.ogTitle,
+      description: meta.ogDesc,
+    },
+    // canonical / alternates 由 Next 按 metadataBase + 当前路由自动生成
+  }
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#fef7f0' },
+    { media: '(prefers-color-scheme: dark)', color: '#1a1005' },
+  ],
+  width: 'device-width',
+  initialScale: 1,
 }
 
 // 防止 FOUC：在 React 水合前同步设置 data-theme + <html lang>
+// title/description 由 generateMetadata SSR 输出，这里不再覆盖以免与 Metadata API 冲突
 const themeScript = `
 (function() {
   try {
@@ -45,19 +127,7 @@ const themeScript = `
         l = nav.indexOf('zh') === 0 ? 'zh' : (nav.indexOf('en') === 0 ? 'en' : 'en');
       } catch (_) { l = 'en'; }
     }
-    var langAttr = l === 'en' ? 'en-US' : 'zh-CN';
-    document.documentElement.setAttribute('lang', langAttr);
-    var metaMap = l === 'en'
-      ? { title: 'ThinkingNotes', desc: 'Make thinking more efficient and organized' }
-      : { title: 'ThinkingNotes - 思维笔记', desc: '帮你把想问题变得更有条理' };
-    document.title = metaMap.title;
-    var existing = document.querySelector('meta[name="description"]');
-    if (!existing) {
-      existing = document.createElement('meta');
-      existing.setAttribute('name', 'description');
-      document.head.appendChild(existing);
-    }
-    existing.setAttribute('content', metaMap.desc);
+    document.documentElement.setAttribute('lang', l === 'en' ? 'en-US' : 'zh-CN');
   } catch (e) {}
 })();
 `
