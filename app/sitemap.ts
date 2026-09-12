@@ -18,6 +18,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     { url: u('/login'), lastModified: now, changeFrequency: 'weekly', priority: 1.0 },
     { url: u('/docs/features'), lastModified: now, changeFrequency: 'weekly', priority: 0.8 },
-    { url: u('/reset-password'), lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
   ]
 }
