@@ -99,4 +99,9 @@ export const TEMPLATE_META: Record<string, { name: string; desc: string; icon: s
     desc: '认同感受-确认目标-描述现状-解决办法-行动计划，先处理情绪再解决问题',
     icon: 'HandHeart',
   },
+  core_aq: {
+    name: 'CORE 逆商模型',
+    desc: 'LEAD 四步应对逆境：倾听-探索-分析-行动，从掌控、担当、蔓延、持续提升逆商',
+    icon: 'Mountain',
+  },
 }

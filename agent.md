@@ -292,7 +292,7 @@ export const noteApi = {
 1. **软删除**：删除笔记仅置 `deleted_at`；回收站可恢复、可永久删除；列表/搜索/筛选默认排除回收站。
 2. **分类删除**：子分类级联删除，其下笔记 `category_id` 置 NULL（归"未分类"）。
 3. **空标题**：新建笔记允许空标题，默认 `未命名`。
-4. **模板 19 种**：`free`（空白）+ cornell / meeting_5w2h / six_hats / eisenhower_matrix / monthly_plan / weekly_plan / daily_plan / woop / ride / prep_method / four_d_work / empathy_map / smart_goal / grai / trust_equation / onion_model / star_report / fossa_comm（`lib/types.ts` 的 `TemplateType` 为准）。
+4. **模板 20 种**：`free`（空白）+ cornell / meeting_5w2h / six_hats / eisenhower_matrix / monthly_plan / weekly_plan / daily_plan / woop / ride / prep_method / four_d_work / empathy_map / smart_goal / grai / trust_equation / onion_model / star_report / fossa_comm / core_aq（`lib/types.ts` 的 `TemplateType` 为准）。
 5. **种子数据**：每用户首次 14 条英文示例，分类 `Examples`，标题 `Example - {name}`，幂等不重复。
 6. **默认语言 English**：`DEFAULT_LOCALE` 逻辑保持；偏好持久化于 `localStorage['thinkingnotes:locale']`。
 7. **主题**：CSS 变量 + `<html data-theme>` 切换，持久化 localStorage；主题切换按钮仅存在于首页。
@@ -324,7 +324,7 @@ export const noteApi = {
 ## 9. 验收冒烟清单
 
 - [ ] 注册新用户 → 自动生成 14 条 `Example - *` 笔记（英文，分类 `Examples`），二次登录不重复
-- [ ] 19 种模板新建笔记，模板默认内容正确注入
+- [ ] 20 种模板新建笔记，模板默认内容正确注入
 - [ ] 笔记 CRUD；空标题落库为 `未命名`；`updated_at` 随编辑刷新
 - [ ] 软删除 → 回收站可见 → 恢复 / 永久删除
 - [ ] 分类树增删改；删除父分类后子分类消失、笔记归未分类；移动笔记到分类

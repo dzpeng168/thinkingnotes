@@ -25,6 +25,7 @@ const TEMPLATE_FILES: Record<string, string | undefined> = {
   onion_model: 'T_ONION_MODEL.md',
   star_report: 'T_STAR_REPORT.md',
   fossa_comm: 'T_FOSSA.md',
+  core_aq: 'T_CORE_AQ.md',
 }
 
 export function isTemplateType(s: string): boolean {

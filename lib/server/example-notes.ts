@@ -35,6 +35,7 @@ export const EXAMPLE_NOTES: ExampleNote[] = [
   { slug: 'onion-model-example', ttype: 'onion_model', enKey: 'onionModel' },
   { slug: 'star-report-example', ttype: 'star_report', enKey: 'starReport' },
   { slug: 'fossa-communication-example', ttype: 'fossa_comm', enKey: 'fossaComm' },
+  { slug: 'core-aq-example', ttype: 'core_aq', enKey: 'coreAq' },
 ]
 
 export function findExampleNote(slug: string): ExampleNote | undefined {

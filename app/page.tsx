@@ -22,7 +22,7 @@ import {
   BookOpen, Check, Tag as TagIcon, FolderInput, Calendar, CalendarDays, CalendarClock,
   ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn, AlertCircle,
   Globe, LogOut,
-  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, Handshake, Layers, Star, HandHeart,
+  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, Handshake, Layers, Star, HandHeart, Mountain,
 } from "lucide-react"
 import { noteApi, tagApi, categoryApi, trashApi, bootstrap, ApiError } from "@/lib/api"
 import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
@@ -42,7 +42,7 @@ const TEMPLATE_ICONS: Record<string, any> = {
   woop: Sparkles, ride: MessageSquare, prep_method: ListOrdered,
   four_d_work: ListTodo, empathy_map: HeartHandshake, smart_goal: Target, grai: RotateCcw,
   trust_equation: Handshake,
-  onion_model: Layers, star_report: Star, fossa_comm: HandHeart,
+  onion_model: Layers, star_report: Star, fossa_comm: HandHeart, core_aq: Mountain,
 }
 
 // 模板徽章配色：每个模板固定一种柔和色调（与登录页风格一致，避免单调）
@@ -66,6 +66,7 @@ const TEMPLATE_BADGE_STYLES: Record<string, string> = {
   onion_model: "bg-rose-100 text-rose-700",
   star_report: "bg-amber-100 text-amber-700",
   fossa_comm: "bg-violet-100 text-violet-700",
+  core_aq: "bg-red-100 text-red-700",
 }
 
 type Selection = string | "all" | "uncategorized" | null

@@ -41,6 +41,7 @@ const EXAMPLE_FILES: Partial<Record<TemplateType, string>> = {
   onion_model: "onion-model-example.md",
   star_report: "star-report-example.md",
   fossa_comm: "fossa-communication-example.md",
+  core_aq: "core-aq-example.md",
 }
 
 export function hasExample(ttype: TemplateType): boolean {

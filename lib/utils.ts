@@ -81,6 +81,7 @@ const TEMPLATE_MESSAGE_KEYS: Record<string, string | undefined> = {
   onion_model: "template.onionModel",
   star_report: "template.starReport",
   fossa_comm: "template.fossaComm",
+  core_aq: "template.coreAq",
 }
 
 /**

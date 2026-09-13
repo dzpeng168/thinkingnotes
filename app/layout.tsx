@@ -42,17 +42,17 @@ const META_BY_LOCALE: Record<"zh" | "en", {
 }> = {
   zh: {
     title: 'ThinkingNotes — 思维笔记',
-    description: '帮你把想问题变得更有条理。康奈尔笔记、5W2H、六顶思考帽、WOOP 等 19 种思维模型模板，云端多端同步，原生 Markdown 体验。',
+    description: '帮你把想问题变得更有条理。康奈尔笔记、5W2H、六顶思考帽、WOOP 等 20 种思维模型模板，云端多端同步，原生 Markdown 体验。',
     keywords: ['思维笔记', '模板笔记', '康奈尔笔记', '5W2H', '六顶思考帽', '思维模型', 'Markdown 笔记', 'Note-taking', 'ThinkingNotes'],
     ogTitle: 'ThinkingNotes — 帮你把想问题变得更有条理',
-    ogDesc: '19 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验',
+    ogDesc: '20 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验',
   },
   en: {
     title: 'ThinkingNotes',
-    description: 'Make thinking more efficient and organized. 19 thinking-model templates including Cornell, 5W2H, Six Thinking Hats, WOOP — cloud-synced, native Markdown.',
+    description: 'Make thinking more efficient and organized. 20 thinking-model templates including Cornell, 5W2H, Six Thinking Hats, WOOP — cloud-synced, native Markdown.',
     keywords: ['thinking notes', 'note templates', 'cornell notes', '5w2h', 'six thinking hats', 'thinking model', 'markdown notes', 'cloud notes', 'ThinkingNotes'],
     ogTitle: 'ThinkingNotes — Make thinking organized',
-    ogDesc: '19 thinking-model templates · Cloud sync · Native Markdown editor',
+    ogDesc: '20 thinking-model templates · Cloud sync · Native Markdown editor',
   },
 }
 

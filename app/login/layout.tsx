@@ -37,14 +37,14 @@ export function generateMetadata(): Metadata {
     return {
       title: 'ThinkingNotes — 思维笔记，让思考更有条理',
       description:
-        '19 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验。康奈尔笔记、5W2H、六顶思考帽、WOOP，从灵感到行动一步到位。',
+        '20 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验。康奈尔笔记、5W2H、六顶思考帽、WOOP，从灵感到行动一步到位。',
       keywords: [
         '思维笔记', '康奈尔笔记', '5W2H', '六顶思考帽',
         '思维模型', 'Markdown 笔记', '云端笔记', 'ThinkingNotes',
       ],
       openGraph: {
         title: 'ThinkingNotes — 思维笔记，让思考更有条理',
-        description: '19 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验',
+        description: '20 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验',
         type: 'website',
         siteName: 'ThinkingNotes',
         url: canonical,
@@ -53,7 +53,7 @@ export function generateMetadata(): Metadata {
       twitter: {
         card: 'summary',
         title: 'ThinkingNotes',
-        description: '思维笔记 · 19 种模板 · 云端多端同步',
+        description: '思维笔记 · 20 种模板 · 云端多端同步',
       },
       alternates: { canonical },
     }
@@ -62,14 +62,14 @@ export function generateMetadata(): Metadata {
   return {
     title: 'ThinkingNotes — Make thinking organized',
     description:
-      '19 thinking-model templates · Cloud sync · Native Markdown editor. Cornell, 5W2H, Six Thinking Hats, WOOP — from inspiration to action.',
+      '20 thinking-model templates · Cloud sync · Native Markdown editor. Cornell, 5W2H, Six Thinking Hats, WOOP — from inspiration to action.',
     keywords: [
       'thinking notes', 'cornell notes', '5w2h', 'six thinking hats',
       'thinking model', 'markdown notes', 'cloud notes', 'ThinkingNotes',
     ],
     openGraph: {
       title: 'ThinkingNotes — Make thinking organized',
-      description: '19 thinking-model templates · Cloud sync · Native Markdown editor',
+      description: '20 thinking-model templates · Cloud sync · Native Markdown editor',
       type: 'website',
       siteName: 'ThinkingNotes',
       url: canonical,

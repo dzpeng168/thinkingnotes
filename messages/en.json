@@ -166,6 +166,8 @@
     "starReportDesc": "Situation – Task – Action – Result, tell any project as a clear timeline",
     "fossaComm": "FOSSA Communication Model",
     "fossaCommDesc": "Feelings – Objectives – Situation – Solutions – Action: handle emotions first, then problems",
+    "coreAq": "CORE AQ Model",
+    "coreAqDesc": "The LEAD four steps — Listen, Explore, Analyze, Do — to face adversity and build Control, Ownership, Reach and Endurance",
     "previewExample": "Preview example",
     "exampleDesc": "This is a sample note for the template, to help you quickly understand its structure and usage.",
     "exampleLoadFailed": "Failed to load example: "
@@ -237,7 +239,7 @@
     "readOnlyHint": "Mobile browsing is read-only. Please use a desktop to create or edit notes."
   },
   "landing": {
-    "heroSubtitle": "19 thinking-model templates · Cloud sync · Native Markdown — from idea to action in one step",
+    "heroSubtitle": "20 thinking-model templates · Cloud sync · Native Markdown — from idea to action in one step",
     "startFree": "Start for free",
     "highlightsTitle": "Built for effective thinking",
     "cloudSync": "Cloud Sync",

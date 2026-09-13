@@ -166,6 +166,8 @@
     "starReportDesc": "背景-任务-行动-结果，把项目讲成一条清晰的时间线",
     "fossaComm": "FOSSA 沟通模型",
     "fossaCommDesc": "认同感受-确认目标-描述现状-解决办法-行动计划，先处理情绪再解决问题",
+    "coreAq": "CORE 逆商模型",
+    "coreAqDesc": "LEAD 四步应对逆境：倾听-探索-分析-行动，从掌控、担当、蔓延、持续提升逆商",
     "previewExample": "预览示例",
     "exampleDesc": "这是该模板的示例笔记，帮助你快速了解它的结构与用法。",
     "exampleLoadFailed": "示例加载失败："
@@ -237,7 +239,7 @@
     "readOnlyHint": "移动端仅支持浏览笔记，请在电脑端创建或编辑笔记。"
   },
   "landing": {
-    "heroSubtitle": "19 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验，从灵感到行动一步到位",
+    "heroSubtitle": "20 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验，从灵感到行动一步到位",
     "startFree": "免费开始",
     "highlightsTitle": "为高效思考而生",
     "cloudSync": "云端同步",
@@ -252,7 +254,7 @@
     "themesDesc": "极简暖纸与商务深色，长时间写作也舒适护眼",
     "trash": "回收站",
     "trashDesc": "删除的笔记可随时恢复，重要内容不丢失",
-    "featuresTitle": "19 种思维模型模板",
+    "featuresTitle": "20 种思维模型模板",
     "featuresSubtitle": "从康奈尔笔记到 SMART 目标，为当下一刻选择合适的思考框架",
     "footer": "© 2026 ThinkingNotes · 让思考更有条理"
   },
