@@ -50,7 +50,7 @@ export function QuickSwitcher({ open, onOpenChange }: Props) {
       }
     })()
     setTimeout(() => inputRef.current?.focus(), 50)
-  }, [open])
+  }, [open, locale])
 
   const items = useMemo<SwitcherItem[]>(() => {
     const q = query.trim().toLowerCase()

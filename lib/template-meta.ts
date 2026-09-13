@@ -84,4 +84,19 @@ export const TEMPLATE_META: Record<string, { name: string; desc: string; icon: s
     desc: '信任=(可信度C+可靠度R+亲密度I)/自私度S，四维评估并改善职场与人际关系',
     icon: 'Handshake',
   },
+  onion_model: {
+    name: '洋葱模型',
+    desc: '从行为到自我的 8 层洞察：逐层剥开一个人的应对方式、情绪、信念、渴望与自我',
+    icon: 'Layers',
+  },
+  star_report: {
+    name: 'STAR 项目汇报',
+    desc: '背景-任务-行动-结果四步结构化汇报，用手做事，用嘴做成事',
+    icon: 'Star',
+  },
+  fossa_comm: {
+    name: 'FOSSA 沟通模型',
+    desc: '认同感受-确认目标-描述现状-解决办法-行动计划，先处理情绪再解决问题',
+    icon: 'HandHeart',
+  },
 }

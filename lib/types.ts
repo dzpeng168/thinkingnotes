@@ -45,4 +45,4 @@ export interface CategoryNode extends Category {
   noteCount: number
 }
 
-export type TemplateType = 'free' | 'cornell' | 'meeting_5w2h' | 'six_hats' | 'eisenhower_matrix' | 'monthly_plan' | 'weekly_plan' | 'daily_plan' | 'woop' | 'ride' | 'prep_method' | 'four_d_work' | 'empathy_map' | 'smart_goal' | 'grai' | 'trust_equation'
+export type TemplateType = 'free' | 'cornell' | 'meeting_5w2h' | 'six_hats' | 'eisenhower_matrix' | 'monthly_plan' | 'weekly_plan' | 'daily_plan' | 'woop' | 'ride' | 'prep_method' | 'four_d_work' | 'empathy_map' | 'smart_goal' | 'grai' | 'trust_equation' | 'onion_model' | 'star_report' | 'fossa_comm'

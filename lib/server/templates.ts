@@ -22,6 +22,9 @@ const TEMPLATE_FILES: Record<string, string | undefined> = {
   smart_goal: 'T_SMART_GOAL.md',
   grai: 'T_GRAI.md',
   trust_equation: 'T_TRUST_EQUATION.md',
+  onion_model: 'T_ONION_MODEL.md',
+  star_report: 'T_STAR_REPORT.md',
+  fossa_comm: 'T_FOSSA.md',
 }
 
 export function isTemplateType(s: string): boolean {

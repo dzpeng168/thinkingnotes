@@ -78,6 +78,9 @@ const TEMPLATE_MESSAGE_KEYS: Record<string, string | undefined> = {
   grai: "template.grai",
   eisenhower_matrix: "template.eisenhowerMatrix",
   trust_equation: "template.trustEquation",
+  onion_model: "template.onionModel",
+  star_report: "template.starReport",
+  fossa_comm: "template.fossaComm",
 }
 
 /**

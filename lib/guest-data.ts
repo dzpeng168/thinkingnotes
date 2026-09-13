@@ -89,7 +89,7 @@ function note(
   return { id, title, template_type, file_path: null, category_id, updated_at, deleted_at: null, tags: [TAG_DEMO, ...tags.filter((t) => t !== TAG_DEMO)] }
 }
 
-/** 中文：15 类思维模型 × 各一条示例笔记 */
+/** 中文：18 类思维模型 × 各一条示例笔记 */
 export const GUEST_NOTES_ZH: NoteListItem[] = [
   note("guest-note-cornell", "《认知心理学》第 3 章：记忆的三级加工模型", "cornell", CAT_IDS.study, "2026-09-04T10:24:00.000Z", [TAG_STUDY]),
   note("guest-note-eisenhower", "本周任务清单：重要 / 紧急四象限排序", "eisenhower_matrix", CAT_IDS.time, "2026-09-05T08:12:00.000Z", [TAG_WORK, TAG_PLAN]),
@@ -106,9 +106,12 @@ export const GUEST_NOTES_ZH: NoteListItem[] = [
   note("guest-note-sixhats", "是否推出免费版？六顶思考帽分析", "six_hats", CAT_IDS.product, "2026-09-02T11:47:00.000Z", [TAG_PRODUCT]),
   note("guest-note-empathy", "在线教育用户共情地图", "empathy_map", CAT_IDS.product, "2026-09-03T10:26:00.000Z", [TAG_PRODUCT]),
   note("guest-note-trust", "测一测：我与直属领导的信任度", "trust_equation", CAT_IDS.express, "2026-09-05T11:30:00.000Z", [TAG_COMM]),
+  note("guest-note-onion", "洞察人心本质：剥洋葱（同事小周）", "onion_model", CAT_IDS.study, "2026-09-06T09:42:00.000Z", [TAG_STUDY, TAG_COMM]),
+  note("guest-note-star", "「极速发票」项目汇报", "star_report", CAT_IDS.work, "2026-09-06T14:15:00.000Z", [TAG_WORK]),
+  note("guest-note-fossa", "用 FOSSA 接住一次愤怒的客户", "fossa_comm", CAT_IDS.express, "2026-09-06T16:50:00.000Z", [TAG_COMM, TAG_WORK]),
 ]
 
-/** 英文：15 类思维模型 × 各一条示例笔记 */
+/** 英文：18 类思维模型 × 各一条示例笔记 */
 export const GUEST_NOTES_EN: NoteListItem[] = [
   note("guest-note-cornell", "Chapter 3 — Three-Level Information Processing Model (Cognitive Psychology)", "cornell", CAT_IDS.study, "2026-09-04T10:24:00.000Z", [TAG_STUDY_EN]),
   note("guest-note-eisenhower", "Weekly Task List — Important / Urgent Quadrant Sort", "eisenhower_matrix", CAT_IDS.time, "2026-09-05T08:12:00.000Z", [TAG_WORK_EN, TAG_PLAN_EN]),
@@ -125,6 +128,9 @@ export const GUEST_NOTES_EN: NoteListItem[] = [
   note("guest-note-sixhats", "Should We Launch a Free Tier? Six Thinking Hats Analysis", "six_hats", CAT_IDS.product, "2026-09-02T11:47:00.000Z", [TAG_PRODUCT_EN]),
   note("guest-note-empathy", "E-Learning User Empathy Map", "empathy_map", CAT_IDS.product, "2026-09-03T10:26:00.000Z", [TAG_PRODUCT_EN]),
   note("guest-note-trust", "Trust Check: Me and My Direct Manager", "trust_equation", CAT_IDS.express, "2026-09-05T11:30:00.000Z", [TAG_COMM_EN]),
+  note("guest-note-onion", "Insight into Human Nature: Peeling the Onion (Designer Zhou)", "onion_model", CAT_IDS.study, "2026-09-06T09:42:00.000Z", [TAG_STUDY_EN, TAG_COMM_EN]),
+  note("guest-note-star", "\"Instant Invoice\" Project Report", "star_report", CAT_IDS.work, "2026-09-06T14:15:00.000Z", [TAG_WORK_EN]),
+  note("guest-note-fossa", "Catching an Angry Client with FOSSA", "fossa_comm", CAT_IDS.express, "2026-09-06T16:50:00.000Z", [TAG_COMM_EN, TAG_WORK_EN]),
 ]
 
 /** 根据当前语言返回游客示例数据。默认（未知）回退到中文。 */

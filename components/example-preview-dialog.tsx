@@ -38,6 +38,9 @@ const EXAMPLE_FILES: Partial<Record<TemplateType, string>> = {
   smart_goal: "smart-goal-example.md",
   grai: "grai-retrospective-example.md",
   trust_equation: "trust-equation-example.md",
+  onion_model: "onion-model-example.md",
+  star_report: "star-report-example.md",
+  fossa_comm: "fossa-communication-example.md",
 }
 
 export function hasExample(ttype: TemplateType): boolean {

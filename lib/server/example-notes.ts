@@ -32,6 +32,9 @@ export const EXAMPLE_NOTES: ExampleNote[] = [
   { slug: 'six-thinking-hats-example', ttype: 'six_hats', enKey: 'sixHats' },
   { slug: 'empathy-map-example', ttype: 'empathy_map', enKey: 'empathyMap' },
   { slug: 'trust-equation-example', ttype: 'trust_equation', enKey: 'trustEquation' },
+  { slug: 'onion-model-example', ttype: 'onion_model', enKey: 'onionModel' },
+  { slug: 'star-report-example', ttype: 'star_report', enKey: 'starReport' },
+  { slug: 'fossa-communication-example', ttype: 'fossa_comm', enKey: 'fossaComm' },
 ]
 
 export function findExampleNote(slug: string): ExampleNote | undefined {
