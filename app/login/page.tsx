@@ -13,14 +13,14 @@ import type { TemplateType } from "@/lib/types"
 import {
   NotebookPen, AlertCircle, Eye, FileText, Globe,
   LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock,
-  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
+  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw, Handshake,
 } from "lucide-react"
 
 const ICONS: Record<string, any> = {
   LayoutGrid, ClipboardList, HardHat, Grid2X2,
   CalendarDays, Calendar, CalendarClock,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
-  FileText,
+  FileText, Handshake,
 }
 
 // 模板图标底色轮换（柔和色调，避免单调）
@@ -36,7 +36,7 @@ const ICON_STYLES = [
 const TEMPLATE_KEYS: TemplateType[] = [
   "free", "cornell", "meeting_5w2h", "six_hats", "eisenhower_matrix",
   "monthly_plan", "weekly_plan", "daily_plan", "woop", "ride",
-  "prep_method", "four_d_work", "empathy_map", "smart_goal", "grai",
+  "prep_method", "four_d_work", "empathy_map", "smart_goal", "grai", "trust_equation",
 ]
 
 export default function LoginPage() {

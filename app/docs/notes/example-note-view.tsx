@@ -20,14 +20,14 @@ export function ExampleNoteView({ html, locale, name, slug }: Props) {
           back: '返回首页',
           noteLabel: '示例笔记',
           ctaTitle: `用「${name}」模板记录你的思考`,
-          ctaDesc: 'ThinkingNotes 内置 15 种思维模型模板，注册即可使用这个模板开始记录。',
+          ctaDesc: 'ThinkingNotes 内置 16 种思维模型模板，注册即可使用这个模板开始记录。',
           ctaBtn: '免费开始使用',
         }
       : {
           back: 'Back home',
           noteLabel: 'Example Note',
           ctaTitle: `Take notes with the ${name} template`,
-          ctaDesc: 'ThinkingNotes ships 15 thinking-model templates. Sign up to start writing with this one.',
+          ctaDesc: 'ThinkingNotes ships 16 thinking-model templates. Sign up to start writing with this one.',
           ctaBtn: 'Get started free',
         }
 

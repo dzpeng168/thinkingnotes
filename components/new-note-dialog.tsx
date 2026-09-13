@@ -7,7 +7,7 @@ import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock, Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw, FileText, Eye } from "lucide-react"
+import { LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock, Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw, FileText, Eye, Handshake } from "lucide-react"
 import { ExamplePreviewDialog, hasExample } from "@/components/example-preview-dialog"
 import { Spinner, TopProgressBar } from "@/components/ui/loading"
 import { noteApi, categoryApi } from "@/lib/api"
@@ -19,7 +19,7 @@ const ICONS: Record<string, any> = {
   LayoutGrid, ClipboardList, HardHat, Grid2X2,
   CalendarDays, Calendar, CalendarClock,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw,
-  FileText,
+  FileText, Handshake,
 }
 
 // 模板图标底色轮换（柔和色调，对齐登录页模板矩阵）
@@ -48,6 +48,7 @@ const TEMPLATE_KEYS: TemplateType[] = [
   "empathy_map",
   "smart_goal",
   "grai",
+  "trust_equation",
 ]
 
 interface Props {

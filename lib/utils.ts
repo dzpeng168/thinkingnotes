@@ -77,6 +77,7 @@ const TEMPLATE_MESSAGE_KEYS: Record<string, string | undefined> = {
   smart_goal: "template.smartGoal",
   grai: "template.grai",
   eisenhower_matrix: "template.eisenhowerMatrix",
+  trust_equation: "template.trustEquation",
 }
 
 /**

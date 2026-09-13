@@ -21,6 +21,7 @@ const TEMPLATE_FILES: Record<string, string | undefined> = {
   empathy_map: 'T_EMPATHY_MAP.md',
   smart_goal: 'T_SMART_GOAL.md',
   grai: 'T_GRAI.md',
+  trust_equation: 'T_TRUST_EQUATION.md',
 }
 
 export function isTemplateType(s: string): boolean {

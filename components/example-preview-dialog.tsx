@@ -37,6 +37,7 @@ const EXAMPLE_FILES: Partial<Record<TemplateType, string>> = {
   empathy_map: "empathy-map-example.md",
   smart_goal: "smart-goal-example.md",
   grai: "grai-retrospective-example.md",
+  trust_equation: "trust-equation-example.md",
 }
 
 export function hasExample(ttype: TemplateType): boolean {

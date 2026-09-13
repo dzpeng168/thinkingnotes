@@ -31,6 +31,7 @@ export const EXAMPLE_NOTES: ExampleNote[] = [
   { slug: 'grai-retrospective-example', ttype: 'grai', enKey: 'grai' },
   { slug: 'six-thinking-hats-example', ttype: 'six_hats', enKey: 'sixHats' },
   { slug: 'empathy-map-example', ttype: 'empathy_map', enKey: 'empathyMap' },
+  { slug: 'trust-equation-example', ttype: 'trust_equation', enKey: 'trustEquation' },
 ]
 
 export function findExampleNote(slug: string): ExampleNote | undefined {

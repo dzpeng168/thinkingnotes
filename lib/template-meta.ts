@@ -79,4 +79,9 @@ export const TEMPLATE_META: Record<string, { name: string; desc: string; icon: s
     desc: 'Goal目标回顾、Result结果评估、Analysis原因分析、Insight规律洞察，系统化复盘',
     icon: 'RotateCcw',
   },
+  trust_equation: {
+    name: '麦肯锡信任公式',
+    desc: '信任=(可信度C+可靠度R+亲密度I)/自私度S，四维评估并改善职场与人际关系',
+    icon: 'Handshake',
+  },
 }

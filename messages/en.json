@@ -158,6 +158,8 @@
     "graiDesc": "Goal – Result – Analysis – Insight — retrospectives that produce real next steps",
     "eisenhowerMatrix": "Eisenhower Matrix",
     "eisenhowerMatrixDesc": "Urgent/important quadrants — prioritize tasks and stay in control of your time",
+    "trustEquation": "McKinsey Trust Equation",
+    "trustEquationDesc": "Trust = (Credibility + Reliability + Intimacy) / Self-orientation — assess and improve workplace and personal relationships",
     "previewExample": "Preview example",
     "exampleDesc": "This is a sample note for the template, to help you quickly understand its structure and usage.",
     "exampleLoadFailed": "Failed to load example: "
@@ -229,7 +231,7 @@
     "readOnlyHint": "Mobile browsing is read-only. Please use a desktop to create or edit notes."
   },
   "landing": {
-    "heroSubtitle": "15 thinking-model templates · Cloud sync · Native Markdown — from idea to action in one step",
+    "heroSubtitle": "16 thinking-model templates · Cloud sync · Native Markdown — from idea to action in one step",
     "startFree": "Start for free",
     "highlightsTitle": "Built for effective thinking",
     "cloudSync": "Cloud Sync",

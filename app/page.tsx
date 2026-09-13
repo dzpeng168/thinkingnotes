@@ -22,7 +22,7 @@ import {
   BookOpen, Check, Tag as TagIcon, FolderInput, Calendar, CalendarDays, CalendarClock,
   ChevronLeft, ChevronRight, RotateCcw, Trash, FileText, Eye, LogIn, AlertCircle,
   Globe, LogOut,
-  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target,
+  Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, Handshake,
 } from "lucide-react"
 import { noteApi, tagApi, categoryApi, trashApi, bootstrap, ApiError } from "@/lib/api"
 import { formatDate, resolveTemplateMeta, useTemplateMeta } from "@/lib/utils"
@@ -41,6 +41,7 @@ const TEMPLATE_ICONS: Record<string, any> = {
   monthly_plan: CalendarDays, weekly_plan: Calendar, daily_plan: CalendarClock,
   woop: Sparkles, ride: MessageSquare, prep_method: ListOrdered,
   four_d_work: ListTodo, empathy_map: HeartHandshake, smart_goal: Target, grai: RotateCcw,
+  trust_equation: Handshake,
 }
 
 // 模板徽章配色：每个模板固定一种柔和色调（与登录页风格一致，避免单调）
@@ -60,6 +61,7 @@ const TEMPLATE_BADGE_STYLES: Record<string, string> = {
   empathy_map: "bg-pink-100 text-pink-700",
   smart_goal: "bg-blue-100 text-blue-700",
   grai: "bg-stone-200 text-stone-700",
+  trust_equation: "bg-purple-100 text-purple-700",
 }
 
 type Selection = string | "all" | "uncategorized" | null

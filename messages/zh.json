@@ -158,6 +158,8 @@
     "graiDesc": "目标-结果-分析-洞察，让复盘真正产出下一步",
     "eisenhowerMatrix": "时间管理四象限",
     "eisenhowerMatrixDesc": "艾森豪威尔矩阵：重要/紧急 × 紧急/不紧急四分区，优先排序，高效掌控时间",
+    "trustEquation": "麦肯锡信任公式",
+    "trustEquationDesc": "信任=(可信度+可靠度+亲密度)/自私度，评估并改善职场与人际关系",
     "previewExample": "预览示例",
     "exampleDesc": "这是该模板的示例笔记，帮助你快速了解它的结构与用法。",
     "exampleLoadFailed": "示例加载失败："
@@ -229,7 +231,7 @@
     "readOnlyHint": "移动端仅支持浏览笔记，请在电脑端创建或编辑笔记。"
   },
   "landing": {
-    "heroSubtitle": "15 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验，从灵感到行动一步到位",
+    "heroSubtitle": "16 种思维模型模板 · 云端多端同步 · 原生 Markdown 体验，从灵感到行动一步到位",
     "startFree": "免费开始",
     "highlightsTitle": "为高效思考而生",
     "cloudSync": "云端同步",
@@ -244,7 +246,7 @@
     "themesDesc": "极简暖纸与商务深色，长时间写作也舒适护眼",
     "trash": "回收站",
     "trashDesc": "删除的笔记可随时恢复，重要内容不丢失",
-    "featuresTitle": "15 种思维模型模板",
+    "featuresTitle": "16 种思维模型模板",
     "featuresSubtitle": "从康奈尔笔记到 SMART 目标，为当下一刻选择合适的思考框架",
     "footer": "© 2026 ThinkingNotes · 让思考更有条理"
   },

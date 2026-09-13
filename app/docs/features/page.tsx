@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: '功能介绍 · ThinkingNotes 思维笔记',
       description:
-        'ThinkingNotes 的全部功能：15 种思维模型模板、云端多端同步、原生 Markdown 编辑器、自动保存、标签与分类管理。',
+        'ThinkingNotes 的全部功能：16 种思维模型模板、云端多端同步、原生 Markdown 编辑器、自动保存、标签与分类管理。',
       keywords: [
         'ThinkingNotes 功能', '思维笔记功能', '模板笔记本',
         'Markdown 编辑器', '云端笔记同步',
@@ -26,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'Features · ThinkingNotes',
     description:
-      'All ThinkingNotes features: 15 thinking-model templates, cloud sync across devices, native Markdown editor, auto-save, tags & categories.',
+      'All ThinkingNotes features: 16 thinking-model templates, cloud sync across devices, native Markdown editor, auto-save, tags & categories.',
     keywords: [
       'ThinkingNotes features', 'markdown notes', 'thinking model templates',
       'cloud note sync', 'cornell notes', '5w2h',
