@@ -1,13 +1,13 @@
 # ThinkingNotes — Features
 
-ThinkingNotes is a thought-note tool built for *think clearly, record well, and execute effectively*. Around 15 classic thinking-model templates, it integrates notes, calendar, review, and to-do into a single workspace so every idea can be organized, traced, and acted on.
+ThinkingNotes is a thought-note tool built for *think clearly, record well, and execute effectively*. Around 20 classic thinking-model templates, it integrates notes, calendar, review, and to-do into a single workspace so every idea can be organized, traced, and acted on.
 
 ---
 
 ## Core Capabilities
 
-### 1. 15 Thinking-Model Templates
-Out-of-the-box structured templates covering work, life, review, decision-making, creativity, communication, goals, and more:
+### 1. 20 Thinking-Model Templates
+Out-of-the-box structured templates covering work, life, review, decision-making, creativity, communication, goals, emotion management, team collaboration, and more:
 
 | Template | Use Case |
 |---|---|
@@ -26,6 +26,11 @@ Out-of-the-box structured templates covering work, life, review, decision-making
 | Empathy Map | User interviews, product positioning, requirement insights |
 | SMART Goals | Goal setting, performance alignment, OKR support |
 | GRAI Review | Project retrospective, process review, experience consolidation |
+| McKinsey Trust Equation | 4-dimensional assessment of credibility / reliability / intimacy / self-orientation for workplace and client trust |
+| Onion Model | Peel through 8 layers — behavior, coping style, emotion, beliefs, longings — to understand anyone at depth |
+| STAR Project Report | Situation – Task – Action – Result; tell any project or achievement as a clear timeline |
+| FOSSA Communication | Handle emotion before problem: Feelings → Objectives → Situation → Solutions → Action |
+| CORE AQ Model | The LEAD four steps to face adversity; build Control, Ownership, Reach and Endurance |
 
 Each template comes with guiding questions, placeholders, and fill-in examples. Click and start writing.
 

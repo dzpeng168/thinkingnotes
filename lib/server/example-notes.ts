@@ -1,6 +1,7 @@
 import { readFile } from 'fs/promises'
 import path from 'path'
 import { TEMPLATE_META } from '@/lib/template-meta'
+import { exampleNotePathFor } from '@/lib/types'
 import enMessages from '@/messages/en.json'
 
 /**
@@ -44,6 +45,14 @@ export function findExampleNote(slug: string): ExampleNote | undefined {
 
 /** 示例笔记的访问路径（中文默认版 / 英文版） */
 export function exampleNotePath(slug: string, locale: 'zh' | 'en'): string {
+  // 优先走 types.ts 里的统一映射；EXAMPLE_NOTES 数组保证 slug 在映射表里
+  // 但服务端 sitemap 也需要从 slug 反查 ttype → 用 EXAMPLE_NOTES 找到 ttype
+  const note = findExampleNote(slug)
+  if (note) {
+    const p = exampleNotePathFor(note.ttype as any, locale)
+    if (p) return p
+  }
+  // 兜底：直接用 slug 拼
   return locale === 'en' ? `/docs/notes/en/${slug}` : `/docs/notes/${slug}`
 }
 

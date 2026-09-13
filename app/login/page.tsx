@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, type FormEvent } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,8 +11,9 @@ import { createClient } from "@/lib/supabase/client"
 import { useT } from "@/lib/i18n"
 import { resolveTemplateMeta } from "@/lib/utils"
 import type { TemplateType } from "@/lib/types"
+import { exampleNotePathFor } from "@/lib/types"
 import {
-  NotebookPen, AlertCircle, Eye, FileText, Globe,
+  NotebookPen, AlertCircle, Eye, FileText, Globe, ArrowUpRight,
   LayoutGrid, ClipboardList, HardHat, Grid2X2, CalendarDays, Calendar, CalendarClock,
   Sparkles, MessageSquare, ListOrdered, ListTodo, HeartHandshake, Target, RotateCcw, Handshake, Layers, Star, HandHeart, Mountain,
 } from "lucide-react"
@@ -201,18 +203,33 @@ export default function LoginPage() {
           {TEMPLATE_KEYS.map((key, i) => {
             const meta = resolveTemplateMeta(key, locale, (k) => t(k as any))
             const Icon = ICONS[meta.icon]
+            const examplePath = exampleNotePathFor(key, locale)
             return (
               <div
                 key={key}
-                className="flex items-start gap-3 rounded-xl border border-warm-200 bg-white p-4 hover:border-warm-400 hover:shadow-warm transition-all h-full"
+                className="relative flex items-start gap-3 rounded-xl border border-warm-200 bg-white p-4 hover:border-warm-400 hover:shadow-warm transition-all h-full"
               >
                 <div className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${ICON_STYLES[i % ICON_STYLES.length]}`}>
                   {Icon && <Icon className="w-4 h-4" />}
                 </div>
-                <div className="min-w-0">
-                  <div className="font-semibold text-sm text-warm-800">{meta.name}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5">
+                    <div className="font-semibold text-sm text-warm-800">{meta.name}</div>
+                  </div>
                   <div className="text-xs text-warm-600 leading-relaxed mt-0.5">{meta.desc}</div>
                 </div>
+                {examplePath && (
+                  <Link
+                    href={examplePath}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="shrink-0 self-start flex items-center gap-0.5 text-[11px] text-warm-400 hover:text-warm-700 transition-colors"
+                    title={locale === 'en' ? 'View example' : '查看示例'}
+                  >
+                    {locale === 'en' ? 'Example' : '示例'}
+                    <ArrowUpRight className="w-3 h-3" />
+                  </Link>
+                )}
               </div>
             )
           })}
